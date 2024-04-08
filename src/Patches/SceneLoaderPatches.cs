@@ -98,6 +98,8 @@ namespace TunicRandomizer {
             }
             if (loadingScene.name == "Quarry" && !EnemyRandomizer.Enemies.ContainsKey("Scavenger_stunner")) {
                 EnemyRandomizer.InitializeEnemies("Quarry");
+                Logger.LogInfo("aaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+                SpawnZigSecret("ziggurat2020_1", new Vector3(2.0801f, 43.5833f, 54.0065f));
                 SceneLoader.LoadScene("Swamp Redux 2");
                 return;
             }
@@ -498,6 +500,24 @@ namespace TunicRandomizer {
             }
             scenePortal.optionalIDToSpawnAt = "";
             gameObject.SetActive(true);
+        }
+
+        private static void SpawnZigSecret(string SceneName, Vector3 position) {
+            Logger.LogInfo("test message 1");
+            GameObject gameObject = GameObject.Instantiate<GameObject>(SpiritArenaTeleporterPrefab, position, SpiritArenaTeleporterPrefab.transform.rotation);
+            Logger.LogInfo("test message 2");
+            ScenePortal scenePortal = gameObject.transform.GetComponentInChildren<ScenePortal>();
+            Logger.LogInfo("test message 3");
+            scenePortal.id = "zigsecret";
+            Logger.LogInfo("test message 4");
+            scenePortal.destinationSceneName = SceneName;
+            Logger.LogInfo("test message 5");
+            scenePortal.spawnTransform = gameObject.transform.GetChild(0).GetChild(0).GetChild(0);
+            Logger.LogInfo("test message 6");
+            scenePortal.optionalIDToSpawnAt = "zigsecret";
+            Logger.LogInfo("test message 7");
+            gameObject.SetActive(true);
+            Logger.LogInfo("test message 8");
         }
 
         public static void SetupOldHouseRelicToggles() {

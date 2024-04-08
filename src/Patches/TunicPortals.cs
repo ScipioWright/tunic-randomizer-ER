@@ -4094,10 +4094,6 @@ namespace TunicRandomizer {
                 // if this triggers, there's an odd number of portals total
                 Logger.LogInfo("one extra dead end remaining alone, rip. It's " + twoPlusPortals[0].Name);
             }
-            // todo: figure out why the quarry portal isn't working right
-            //Portal betaQuarryPortal = new Portal(destination: "Darkwoods", tag: "", name: "Beta Quarry", scene: "Quarry", region: "Quarry", requiredItems: new Dictionary<string, int>(), givesAccess: new List<string>(), deadEnd: true, prayerPortal: false, oneWay: false, ignoreScene: false);
-            //Portal zigSkipPortal = new Portal(destination: "ziggurat2020_3", tag: "zig2_skip", name: "Zig Skip", scene: "ziggurat2020_1", region: "Zig 1", requiredItems: new Dictionary<string, int>(), givesAccess: new List<string>(), deadEnd: true, prayerPortal: false, oneWay: false, ignoreScene: false);
-            //RandomizedPortals.Add("zigsecret", new PortalCombo(betaQuarryPortal, zigSkipPortal));
         }
 
         // this is for using the info from Archipelago to pair up the portals
@@ -4177,6 +4173,18 @@ namespace TunicRandomizer {
                             portal.optionalIDToSpawnAt = comboTag; // quadrupling since doubling and tripling can have overlaps
                             portal.name = portal2.Name;
                         }
+                        break;
+                    }
+                }
+            }
+
+            if (scene_name == "ziggurat2020_1") {
+                foreach (var portal in Portals) {
+                    if (portal.FullID == "ziggurat2020_3_zig2_skip") {
+                        portal.destinationSceneName = "Quarry";
+                        portal.id = "zigsecret";
+                        portal.optionalIDToSpawnAt = "";
+                        portal.name = "Zig Skip";
                         break;
                     }
                 }
