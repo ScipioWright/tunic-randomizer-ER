@@ -83,11 +83,14 @@ namespace TunicRandomizer {
         }
 
         public static bool Chest_shouldShowAsOpen_GetterPatch(Chest __instance, ref bool __result) {
+            Logger.LogInfo("test message 1");
             string ActiveScene = SceneManager.GetActiveScene().name;
             if (ActiveScene == "Quarry") {
+                Logger.LogInfo("test message 2");
                 __result = false;
                 return false;
             }
+            Logger.LogInfo("test message 3");
 
             string ChestObjectId = __instance.chestID == 0 ? $"{__instance.gameObject.scene.name}-{__instance.transform.position.ToString()} [{ActiveScene}]" : $"{__instance.chestID} [{ActiveScene}]";
             if (Locations.LocationIdToDescription.ContainsKey(ChestObjectId)) {

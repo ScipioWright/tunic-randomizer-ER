@@ -177,22 +177,26 @@ namespace TunicRandomizer {
         }
 
         public static bool Campfire_isUseableAccordingToConduitSystem_GetterPatch(Campfire __instance, ref bool __result) {
-            
+            Logger.LogInfo(__instance.gameObject.name);
+            Logger.LogInfo("checking Campfire_isUseableAccordingToConduitSystem_GetterPatch");
             if (TunicRandomizer.Settings.EnableAllCheckpoints) {
+                Logger.LogInfo("checking Campfire_isUseableAccordingToConduitSystem_GetterPatch false");
                 __result = true;
 
                 return false;
             }
-
+            Logger.LogInfo("checking Campfire_isUseableAccordingToConduitSystem_GetterPatch true");
             return true;
         }
 
         public static bool ConduitNode_CheckConnectedToPower_PrefixPatch(ConduitNode __instance, ref bool __result) {
-            if (TunicRandomizer.Settings.EnableAllCheckpoints && __instance.GetComponent<Campfire>() != null && __instance.GetComponent<UpgradeAltar>() != null) {
+            Logger.LogInfo("checking ConduitNode_CheckConnectedToPower_PrefixPatch");
+            if (TunicRandomizer.Settings.EnableAllCheckpoints && __instance.GetComponent<Campfire>() != null && __instance.GetComponent<UpgradeAltar>() != null && SceneLoader.loadingSceneName != "Quarry") {
                 __result = true;
+                Logger.LogInfo("checking ConduitNode_CheckConnectedToPower_PrefixPatch false");
                 return false;
             }
-
+            Logger.LogInfo("checking ConduitNode_CheckConnectedToPower_PrefixPatch true");
             return true;
         }
     }
