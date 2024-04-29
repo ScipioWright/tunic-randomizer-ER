@@ -199,5 +199,21 @@ namespace TunicRandomizer {
             Logger.LogInfo("checking ConduitNode_CheckConnectedToPower_PrefixPatch true");
             return true;
         }
+
+        public static bool ConduitData_CheckConnectedToPower_PrefixPatch(ConduitData __instance, ref int guid, ref bool __result) {
+            if (SceneManager.GetActiveScene().name == "Quarry") {
+                __result = true;
+                return false;
+            }
+            return true;
+        }
+
+        public static bool ConduitData_IsFuseClosedByID_PrefixPatch(ConduitData __instance, ref int guid, ref bool __result) {
+            if (SceneManager.GetActiveScene().name == "Quarry") {
+                __result = true;
+                return false;
+            }
+            return true;
+        }
     }
 }
