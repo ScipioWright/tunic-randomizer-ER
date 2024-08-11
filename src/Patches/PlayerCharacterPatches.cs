@@ -658,7 +658,7 @@ namespace TunicRandomizer {
                 Inventory.GetItemByName("Torch").Quantity = 1;
             }
             if (random.Next(100) <= TunicRandomizer.Settings.MysterySeedWeights.ERFixedShop) {
-                SaveFile.SetInt(EntranceRandoFixedShop, 1);
+                SaveFile.SetInt(FixedShop, 1);
             }
             if (random.Next(100) <= TunicRandomizer.Settings.MysterySeedWeights.Maskless) {
                 SaveFile.SetInt(MasklessLogic, 1);
