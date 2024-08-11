@@ -11,6 +11,8 @@ namespace TunicRandomizer {
 
         public ConnectionSettings ConnectionSettings { get; set; }
 
+        public MysterySeedWeights MysterySeedWeights { get; set; }
+
         public enum RandomizerType {
             SINGLEPLAYER,
             ARCHIPELAGO
@@ -33,6 +35,7 @@ namespace TunicRandomizer {
         private const int MASKLESS = 256;
         private const int MYSTERY_SEED = 512;
         private const int SHUFFLE_LADDERS = 1024;
+        private const int GRASS_RANDOMIZER = 2048;
 
         public GameModes GameMode {
             get;
@@ -114,6 +117,11 @@ namespace TunicRandomizer {
         }
 
         public bool ShuffleLadders {
+            get;
+            set;
+        }
+
+        public bool GrassRandomizer {
             get;
             set;
         }
@@ -223,6 +231,11 @@ namespace TunicRandomizer {
         }
 
         public bool FasterUpgrades {
+            get;
+            set;
+        }
+
+        public bool ShowRecentItems {
             get;
             set;
         }
@@ -405,6 +418,7 @@ namespace TunicRandomizer {
         public RandomizerSettings() {
 
             ConnectionSettings = new ConnectionSettings();
+            MysterySeedWeights = new MysterySeedWeights();
             Mode = RandomizerType.SINGLEPLAYER;
 
             // Single Player
@@ -425,6 +439,7 @@ namespace TunicRandomizer {
             Maskless = false;
             MysterySeed = false;
             ShuffleLadders = false;
+            GrassRandomizer = false;
 
             // Archipelago 
             DeathLinkEnabled = false;
@@ -449,6 +464,7 @@ namespace TunicRandomizer {
             BonusStatUpgradesEnabled = true;
             DisableChestInterruption = false;
             FasterUpgrades = false;
+            ShowRecentItems = true;
 
             // Other
             CameraFlip = false;
@@ -503,7 +519,8 @@ namespace TunicRandomizer {
                 $":{Convert.ToInt32(sToB(enemySettings()), 2)}" +
                 $":{Convert.ToInt32(sToB(raceSettings()), 2)}" +
                 $":{Convert.ToInt32(sToB(otherSettings()), 2)}" +
-                $":{ConvertEnemyToggles()}"));
+                $":{ConvertEnemyToggles()}" +
+                $":{(MysterySeed ? PlayerCharacter.Instanced ? SaveFile.GetString("randomizer mystery seed weights") : MysterySeedWeights.ToSettingsString() : "")}"));
             string seed;
             if (SceneManager.GetActiveScene().name != "TitleScreen") {
                 seed = SaveFile.GetInt("seed").ToString();
@@ -514,7 +531,6 @@ namespace TunicRandomizer {
             string SettingsString = $"tunc:{PluginInfo.VERSION}:{seed}:{EncodedSettings}";
             return SettingsString;
         }
-
         public void ParseSettingsString(string s) {
             try {
                 string[] split = s.Split(':');
@@ -545,6 +561,7 @@ namespace TunicRandomizer {
                 Maskless = eval(logic, MASKLESS);
                 MysterySeed = eval(logic, MYSTERY_SEED);
                 ShuffleLadders = eval(logic, SHUFFLE_LADDERS);
+                GrassRandomizer = eval(logic, GRASS_RANDOMIZER);
 
                 int general = int.Parse(decodedSplit[5]);
                 HeirAssistModeEnabled = eval(general, EASY_HEIR);
@@ -592,6 +609,9 @@ namespace TunicRandomizer {
 
                     ParseEnemyToggles(decodedSplit[10]);
                 }
+                if (MysterySeed) {
+                    MysterySeedWeights.FromSettingsString(decodedSplit[11]);
+                }
 
                 OptionsGUIPatches.SaveSettings();
             } catch (Exception e) {
@@ -613,7 +633,7 @@ namespace TunicRandomizer {
                     GameMode == GameModes.HEXAGONQUEST,
                     KeysBehindBosses, StartWithSwordEnabled, SwordProgressionEnabled,
                     ShuffleAbilities, EntranceRandoEnabled, ERFixedShop, PortalDirectionPairs, DecoupledER,
-                    Lanternless, Maskless, MysterySeed, ShuffleLadders
+                    Lanternless, Maskless, MysterySeed, ShuffleLadders, GrassRandomizer
                 };
             } else {
                 return new bool[] { 
@@ -623,7 +643,8 @@ namespace TunicRandomizer {
                     SaveFile.GetInt(SaveFlags.EntranceRando) == 1, SaveFile.GetInt(SaveFlags.FixedShop) == 1,
                     SaveFile.GetInt(SaveFlags.PortalDirectionPairs) == 1, SaveFile.GetInt(SaveFlags.Decoupled) == 1,
                     SaveFile.GetInt(SaveFlags.LanternlessLogic) == 1, SaveFile.GetInt(SaveFlags.MasklessLogic) == 1,
-                    SaveFile.GetInt("randomizer mystery seed") == 1, SaveFile.GetInt(SaveFlags.LadderRandoEnabled) == 1
+                    SaveFile.GetInt("randomizer mystery seed") == 1, SaveFile.GetInt(SaveFlags.LadderRandoEnabled) == 1,
+                    SaveFile.GetInt(SaveFlags.GrassRandoEnabled) == 1
                 };
             }
         }
@@ -677,6 +698,13 @@ namespace TunicRandomizer {
 
         public static void copySettings() {
             GUIUtility.systemCopyBuffer = TunicRandomizer.Settings.GetSettingsString();
+        }
+
+        public void ReadConnectionSettingsFromSaveFile() {
+            ConnectionSettings.Player = SaveFile.GetString(SaveFlags.ArchipelagoPlayerName);
+            ConnectionSettings.Port = SaveFile.GetInt(SaveFlags.ArchipelagoPort).ToString();
+            ConnectionSettings.Hostname = SaveFile.GetString(SaveFlags.ArchipelagoHostname);
+            ConnectionSettings.Password = SaveFile.GetString(SaveFlags.ArchipelagoPassword);
         }
     }
 }

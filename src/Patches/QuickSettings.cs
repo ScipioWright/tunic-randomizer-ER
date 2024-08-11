@@ -14,6 +14,8 @@ namespace TunicRandomizer {
         public static List<string> FoolColors = new List<string>() { "white", "#4FF5D4", "#E3D457", "#FF3333" };
         private static bool ShowAdvancedSinglePlayerOptions = false;
         private static bool ShowAPSettingsWindow = false;
+        private static bool ShowMysterySeedWindow = false;
+        private static int MysteryWindowPage = 0;
         private static string stringToEdit = "";
         private static int stringCursorPosition = 0;
         private static bool showPort = false;
@@ -160,7 +162,7 @@ namespace TunicRandomizer {
                 Cursor.visible = true;
                 switch (TunicRandomizer.Settings.Mode) {
                     case RandomizerSettings.RandomizerType.SINGLEPLAYER:
-                        GUI.Window(101, new Rect(20f, (float)Screen.height * 0.12f, 430f * guiScale, TunicRandomizer.Settings.MysterySeed ? 470f * guiScale : 550f * guiScale), new Action<int>(SinglePlayerQuickSettingsWindow), "Single Player Settings");
+                        GUI.Window(101, new Rect(20f, (float)Screen.height * 0.12f, 430f * guiScale, TunicRandomizer.Settings.MysterySeed ? 510f * guiScale : 550f * guiScale), new Action<int>(SinglePlayerQuickSettingsWindow), "Single Player Settings");
                         ShowAPSettingsWindow = false;
                         clearAllEditingFlags();
                         break;
@@ -170,12 +172,15 @@ namespace TunicRandomizer {
                 }
 
                 if (ShowAPSettingsWindow && TunicRandomizer.Settings.Mode == RandomizerSettings.RandomizerType.ARCHIPELAGO) {
-                    GUI.Window(103, new Rect(460f * guiScale, (float)Screen.height * 0.12f, 350f * guiScale, 490f * guiScale), new Action<int>(ArchipelagoConfigEditorWindow), "Archipelago Config");
+                    GUI.Window(103, new Rect(460f * guiScale, (float)Screen.height * 0.12f, 350f * guiScale, 490f * guiScale), new Action<int>(ArchipelagoConfigEditorWindow), "Archipelago Connection");
                 }
                 if (ShowAdvancedSinglePlayerOptions && TunicRandomizer.Settings.Mode == RandomizerSettings.RandomizerType.SINGLEPLAYER && !TunicRandomizer.Settings.MysterySeed) {
-                    GUI.Window(105, new Rect(460f * guiScale, (float)Screen.height * 0.12f, 405f * guiScale, 485f * guiScale), new Action<int>(AdvancedLogicOptionsWindow), "Advanced Logic Options");
+                    GUI.Window(105, new Rect(460f * guiScale, (float)Screen.height * 0.12f, 405f * guiScale, 565f * guiScale), new Action<int>(AdvancedLogicOptionsWindow), "Advanced Logic Options");
                 }
-                GameObject.Find("elderfox_sword graphic").GetComponent<Renderer>().enabled = !ShowAdvancedSinglePlayerOptions && !ShowAPSettingsWindow;
+                if (ShowMysterySeedWindow && TunicRandomizer.Settings.Mode == RandomizerSettings.RandomizerType.SINGLEPLAYER && TunicRandomizer.Settings.MysterySeed) {
+                    GUI.Window(106, new Rect(460f * guiScale, (float)Screen.height * 0.12f, 405f * guiScale, 430f * guiScale), new Action<int>(MysterySeedWeightsWindow), "Mystery Seed Settings");
+                }
+                GameObject.Find("elderfox_sword graphic").GetComponent<Renderer>().enabled = !ShowAdvancedSinglePlayerOptions && !ShowAPSettingsWindow && !ShowMysterySeedWindow;
                 if (TitleVersion.TitleButtons != null) {
                     foreach (Button button in TitleVersion.TitleButtons.GetComponentsInChildren<Button>()) {
                         button.enabled = !ShowAPSettingsWindow;
@@ -332,25 +337,16 @@ namespace TunicRandomizer {
             }
             GUI.color = Color.white;
             y += 40f * guiScale;
-            bool Connect = GUI.Button(new Rect(10f * guiScale, y, 200f * guiScale, 30f * guiScale), "Connect");
-            if (Connect) {
-                Archipelago.instance.Connect();
-            }
-
-            bool Disconnect = GUI.Button(new Rect(220f * guiScale, y, 200f * guiScale, 30f * guiScale), "Disconnect");
-            if (Disconnect) {
-                Archipelago.instance.Disconnect();
-            }
-            y += 40f * guiScale;
-            bool OpenSettings = GUI.Button(new Rect(10f * guiScale, y, 200f * guiScale, 30f * guiScale), "Open Settings File");
-            if (OpenSettings) {
-                try {
-                    System.Diagnostics.Process.Start(TunicRandomizer.SettingsPath);
-                } catch (Exception e) {
-                    TunicLogger.LogError(e.Message);
+            bool Connection = GUI.Button(new Rect(10f * guiScale, y, 160f * guiScale, 30f * guiScale), Archipelago.instance.IsConnected() ? "Disconnect" : "Connect");
+            if (Connection) {
+                if (Archipelago.instance.IsConnected()) {
+                    Archipelago.instance.Disconnect();
+                } else {
+                    Archipelago.instance.Connect();
                 }
             }
-            bool OpenAPSettings = GUI.Button(new Rect(220f * guiScale, y, 200f * guiScale, 30f * guiScale), ShowAPSettingsWindow ? "Close AP Config" : "Edit AP Config");
+
+            bool OpenAPSettings = GUI.Button(new Rect(180f * guiScale, y, 240f * guiScale, 30f * guiScale), ShowAPSettingsWindow ? "Close Connection Info" : "Edit Connection Info");
             if (OpenAPSettings) {
                 if (ShowAPSettingsWindow) {
                     CloseAPSettingsWindow();
@@ -376,17 +372,25 @@ namespace TunicRandomizer {
                 int FoolIndex = int.Parse(slotData["fool_traps"].ToString());
                 GUI.Toggle(new Rect(220f * guiScale, y, 195f * guiScale, 60f * guiScale), FoolIndex != 0, $"Fool Traps: {(FoolIndex == 0 ? "Off" : $"<color={FoolColors[FoolIndex]}>{FoolChoices[FoolIndex]}</color>")}");
 
+                y += 40f * guiScale;
+                
                 if (slotData.ContainsKey("entrance_rando")) {
-                    y += 40f * guiScale;
                     GUI.Toggle(new Rect(10f * guiScale, y, 195f * guiScale, 30f * guiScale), slotData["entrance_rando"].ToString() == "1", $"Entrance Randomizer");
                 } else {
-                    y += 40f * guiScale;
                     GUI.Toggle(new Rect(10f * guiScale, y, 195f * guiScale, 30f * guiScale), false, $"Entrance Randomizer");
                 }
                 if (slotData.ContainsKey("shuffle_ladders")) {
                     GUI.Toggle(new Rect(220f * guiScale, y, 195f * guiScale, 30f * guiScale), slotData["shuffle_ladders"].ToString() == "1", $"Shuffled Ladders");
                 } else {
                     GUI.Toggle(new Rect(220f * guiScale, y, 195f * guiScale, 30f * guiScale), false, $"Shuffled Ladders");
+                }
+
+                y += 40f * guiScale;
+             
+                if (slotData.ContainsKey("grass_randomizer")) {
+                    GUI.Toggle(new Rect(10f * guiScale, y, 195f * guiScale, 30f * guiScale), slotData["grass_randomizer"].ToString() == "1", $"Grass Randomizer");
+                } else {
+                    GUI.Toggle(new Rect(10f * guiScale, y, 195f * guiScale, 30f * guiScale), false, $"Grass Randomizer");
                 }
             } else {
                 y += 40f * guiScale;
@@ -401,6 +405,9 @@ namespace TunicRandomizer {
                 y += 40f * guiScale;
                 GUI.Toggle(new Rect(10f * guiScale, y, 195f * guiScale, 30f * guiScale), false, $"Entrance Randomizer");
                 GUI.Toggle(new Rect(220f * guiScale, y, 195f * guiScale, 30f * guiScale), false, $"Shuffled Ladders");
+                y += 40f * guiScale;
+                GUI.Toggle(new Rect(10f * guiScale, y, 195f * guiScale, 30f * guiScale), false, $"Grass Randomizer");
+
             }
             y += 40f * guiScale;
             GUI.Label(new Rect(10f * guiScale, y, 400f * guiScale, 30f * guiScale), $"Other Settings <size={(int)(18 * guiScale)}>(more in options menu!)</size>");
@@ -467,6 +474,12 @@ namespace TunicRandomizer {
                 TunicRandomizer.Settings.StartWithSwordEnabled = GUI.Toggle(new Rect(10f * guiScale, y, 175f * guiScale, 30f * guiScale), TunicRandomizer.Settings.StartWithSwordEnabled, "Start With Sword");
                 TunicRandomizer.Settings.MysterySeed = GUI.Toggle(new Rect(240f * guiScale, y, 200f * guiScale, 30f * guiScale), TunicRandomizer.Settings.MysterySeed, "Mystery Seed");
                 y += 40f * guiScale;
+                bool ShowAdvancedOptions = GUI.Button(new Rect(10f * guiScale, y, 410f * guiScale, 30f * guiScale), $"Configure Mystery Seed");
+                if (ShowAdvancedOptions) {
+                    ShowMysterySeedWindow = !ShowMysterySeedWindow;
+                    ShowAdvancedSinglePlayerOptions = false;
+                }
+                y += 40f * guiScale;
             } else {
                 bool ToggleHexagonQuest = GUI.Toggle(new Rect(10f * guiScale, y, 185f * guiScale, 30f * guiScale), TunicRandomizer.Settings.GameMode == RandomizerSettings.GameModes.HEXAGONQUEST, $"Hexagon Quest {(TunicRandomizer.Settings.GameMode == RandomizerSettings.GameModes.HEXAGONQUEST ? $"(<color=#E3D457>{TunicRandomizer.Settings.HexagonQuestGoal}</color>)" : "")}");
                 if (ToggleHexagonQuest) {
@@ -489,6 +502,7 @@ namespace TunicRandomizer {
                 bool ShowAdvancedOptions = GUI.Button(new Rect(10f * guiScale, y, 410f * guiScale, 30f * guiScale), $"{(ShowAdvancedSinglePlayerOptions ? "Hide" : "Show")} Advanced Options");
                 if (ShowAdvancedOptions) {
                     ShowAdvancedSinglePlayerOptions = !ShowAdvancedSinglePlayerOptions;
+                    ShowMysterySeedWindow = false;
                 }
                 y += 40f * guiScale;
 
@@ -536,6 +550,11 @@ namespace TunicRandomizer {
             GUI.Label(new Rect(10f * guiScale, y, 300f * guiScale, 30f * guiScale), $"Entrance Randomizer");
             y += 40f * guiScale;
             TunicRandomizer.Settings.ERFixedShop = GUI.Toggle(new Rect(10f * guiScale, y, 200f * guiScale, 30f * guiScale), TunicRandomizer.Settings.ERFixedShop, "Fewer Shop Entrances");
+            y += 40f * guiScale;
+            GUI.Label(new Rect(10f * guiScale, y, 300f * guiScale, 30f * guiScale), $"Grass Randomizer");
+            y += 40f * guiScale;
+            TunicRandomizer.Settings.GrassRandomizer = GUI.Toggle(new Rect(10f * guiScale, y, 175f * guiScale, 30f * guiScale), TunicRandomizer.Settings.GrassRandomizer, "Grass Randomizer");
+            TunicRandomizer.Settings.ClearEarlyBushes = GUI.Toggle(new Rect(195 * guiScale, y, 195f * guiScale, 30f * guiScale), TunicRandomizer.Settings.ClearEarlyBushes, "Clear Early Bushes");
             y += 40f * guiScale;
             GUI.Label(new Rect(10f * guiScale, y, 300f * guiScale, 30f * guiScale), $"Fool Traps");
             y += 40f * guiScale;
@@ -664,6 +683,110 @@ namespace TunicRandomizer {
 
         }
 
+        private static void MysterySeedWeightsWindow(int windowID) {
+            GUI.skin.label.fontSize = (int)(20 * guiScale);
+            GUI.skin.button.fontSize = (int)(17 * guiScale);
+            float y = 25f * guiScale;
+            if (MysteryWindowPage == 0) {
+                GUI.Label(new Rect(10f * guiScale, y, 300f * guiScale, 30f * guiScale), $"Sword Progression");
+                GUI.Label(new Rect(210f * guiScale, y, 300f * guiScale, 30f * guiScale), $"Hexagon Quest");
+                y += 25f * guiScale;
+                GUI.Label(new Rect(160f * guiScale, y + 5, 45f * guiScale, 30f * guiScale), $"{TunicRandomizer.Settings.MysterySeedWeights.SwordProgression}%");
+                TunicRandomizer.Settings.MysterySeedWeights.SwordProgression = (int)GUI.HorizontalSlider(new Rect(10f * guiScale, y + 15, 140f * guiScale, 20f * guiScale), TunicRandomizer.Settings.MysterySeedWeights.SwordProgression, 0, 100);
+
+                GUI.Label(new Rect(360f * guiScale, y + 5, 45f * guiScale, 30f * guiScale), $"{TunicRandomizer.Settings.MysterySeedWeights.HexagonQuest}%");
+                TunicRandomizer.Settings.MysterySeedWeights.HexagonQuest = (int)GUI.HorizontalSlider(new Rect(210f * guiScale, y + 15, 140f * guiScale, 20f * guiScale), TunicRandomizer.Settings.MysterySeedWeights.HexagonQuest, 0, 100);
+
+                y += 40f * guiScale;
+                GUI.Label(new Rect(10f * guiScale, y, 300f * guiScale, 30f * guiScale), $"Keys Behind Bosses");
+                GUI.Label(new Rect(210f * guiScale, y, 300f * guiScale, 30f * guiScale), $"Shuffle Abilities");
+                y += 25f * guiScale;
+                GUI.Label(new Rect(160f * guiScale, y + 5, 45f * guiScale, 30f * guiScale), $"{TunicRandomizer.Settings.MysterySeedWeights.KeysBehindBosses}%");
+                TunicRandomizer.Settings.MysterySeedWeights.KeysBehindBosses = (int)GUI.HorizontalSlider(new Rect(10f * guiScale, y + 15, 140f * guiScale, 20f * guiScale), TunicRandomizer.Settings.MysterySeedWeights.KeysBehindBosses, 0, 100);
+                GUI.Label(new Rect(360f * guiScale, y + 5, 45f * guiScale, 30f * guiScale), $"{TunicRandomizer.Settings.MysterySeedWeights.ShuffleAbilities}%");
+                TunicRandomizer.Settings.MysterySeedWeights.ShuffleAbilities = (int)GUI.HorizontalSlider(new Rect(210f * guiScale, y + 15, 140f * guiScale, 20f * guiScale), TunicRandomizer.Settings.MysterySeedWeights.ShuffleAbilities, 0, 100);
+
+                y += 40f * guiScale;
+                GUI.Label(new Rect(10f * guiScale, y, 300f * guiScale, 30f * guiScale), $"Entrance Randomizer");
+                GUI.Label(new Rect(210f * guiScale, y, 300f * guiScale, 30f * guiScale), $"ER: Fewer Shops");
+                y += 25f * guiScale;
+                GUI.Label(new Rect(160f * guiScale, y + 5, 45f * guiScale, 30f * guiScale), $"{TunicRandomizer.Settings.MysterySeedWeights.EntranceRando}%");
+                TunicRandomizer.Settings.MysterySeedWeights.EntranceRando = (int)GUI.HorizontalSlider(new Rect(10f * guiScale, y + 15, 140f * guiScale, 20f * guiScale), TunicRandomizer.Settings.MysterySeedWeights.EntranceRando, 0, 100);
+                GUI.Label(new Rect(360f * guiScale, y + 5, 45f * guiScale, 30f * guiScale), $"{TunicRandomizer.Settings.MysterySeedWeights.ERFixedShop}%");
+                TunicRandomizer.Settings.MysterySeedWeights.ERFixedShop = (int)GUI.HorizontalSlider(new Rect(210f * guiScale, y + 15, 140f * guiScale, 20f * guiScale), TunicRandomizer.Settings.MysterySeedWeights.ERFixedShop, 0, 100);
+
+                y += 40f * guiScale;
+                GUI.Label(new Rect(10f * guiScale, y, 300f * guiScale, 30f * guiScale), $"Shuffle Ladders");
+                GUI.Label(new Rect(210f * guiScale, y, 300f * guiScale, 30f * guiScale), $"Grass Randomizer");
+                y += 25f * guiScale;
+                GUI.Label(new Rect(160f * guiScale, y + 5, 45f * guiScale, 30f * guiScale), $"{TunicRandomizer.Settings.MysterySeedWeights.ShuffleLadders}%");
+                TunicRandomizer.Settings.MysterySeedWeights.ShuffleLadders = (int)GUI.HorizontalSlider(new Rect(10f * guiScale, y + 15, 140f * guiScale, 20f * guiScale), TunicRandomizer.Settings.MysterySeedWeights.ShuffleLadders, 0, 100);
+                // Todo add grass randomizer
+                GUI.Label(new Rect(360f * guiScale, y + 5, 45f * guiScale, 30f * guiScale), $"{TunicRandomizer.Settings.MysterySeedWeights.GrassRando}%");
+                TunicRandomizer.Settings.MysterySeedWeights.GrassRando = (int)GUI.HorizontalSlider(new Rect(210f * guiScale, y + 15, 140f * guiScale, 20f * guiScale), TunicRandomizer.Settings.MysterySeedWeights.GrassRando, 0, 100);
+
+                y += 40f * guiScale;
+                GUI.Label(new Rect(10f * guiScale, y, 300f * guiScale, 30f * guiScale), $"Lanternless Logic");
+                GUI.Label(new Rect(210f * guiScale, y, 300f * guiScale, 30f * guiScale), $"Maskless Logic");
+                y += 25f * guiScale;
+                GUI.Label(new Rect(160f * guiScale, y + 5, 45f * guiScale, 30f * guiScale), $"{TunicRandomizer.Settings.MysterySeedWeights.Lanternless}%");
+                TunicRandomizer.Settings.MysterySeedWeights.Lanternless = (int)GUI.HorizontalSlider(new Rect(10f * guiScale, y + 15, 140f * guiScale, 20f * guiScale), TunicRandomizer.Settings.MysterySeedWeights.Lanternless, 0, 100);
+                GUI.Label(new Rect(360f * guiScale, y + 5, 45f * guiScale, 30f * guiScale), $"{TunicRandomizer.Settings.MysterySeedWeights.Maskless}%");
+                TunicRandomizer.Settings.MysterySeedWeights.Maskless = (int)GUI.HorizontalSlider(new Rect(210f * guiScale, y + 15, 140f * guiScale, 20f * guiScale), TunicRandomizer.Settings.MysterySeedWeights.Maskless, 0, 100);
+            } else if (MysteryWindowPage == 1) {
+                GUI.Label(new Rect(10f * guiScale, y, 400f * guiScale, 30f * guiScale), $"Hexagon Quest - Goal Amount");
+                y += 30f * guiScale;
+                TunicRandomizer.Settings.MysterySeedWeights.HexQuestGoalRandom = GUI.Toggle(new Rect(10f * guiScale, y, 90f * guiScale, 30f * guiScale), TunicRandomizer.Settings.MysterySeedWeights.HexQuestGoalRandom, "Random");
+                TunicRandomizer.Settings.MysterySeedWeights.HexQuestGoalLow = GUI.Toggle(new Rect(110f * guiScale, y, 90f * guiScale, 30f * guiScale), TunicRandomizer.Settings.MysterySeedWeights.HexQuestGoalLow, " Low");
+                TunicRandomizer.Settings.MysterySeedWeights.HexQuestGoalMedium = GUI.Toggle(new Rect(210f * guiScale, y, 90f * guiScale, 30f * guiScale), TunicRandomizer.Settings.MysterySeedWeights.HexQuestGoalMedium, "Medium");
+                TunicRandomizer.Settings.MysterySeedWeights.HexQuestGoalHigh = GUI.Toggle(new Rect(310f * guiScale, y, 90f * guiScale, 30f * guiScale), TunicRandomizer.Settings.MysterySeedWeights.HexQuestGoalHigh, "High");
+
+                y += 35f * guiScale;
+                GUI.Label(new Rect(10f * guiScale, y, 400f * guiScale, 30f * guiScale), $"Hexagon Quest - # of Extra Hexagons");
+                y += 30f * guiScale;
+                TunicRandomizer.Settings.MysterySeedWeights.HexQuestExtrasRandom = GUI.Toggle(new Rect(10f * guiScale, y, 90f * guiScale, 30f * guiScale), TunicRandomizer.Settings.MysterySeedWeights.HexQuestExtrasRandom, "Random");
+                TunicRandomizer.Settings.MysterySeedWeights.HexQuestExtrasLow = GUI.Toggle(new Rect(110f * guiScale, y, 90f * guiScale, 30f * guiScale), TunicRandomizer.Settings.MysterySeedWeights.HexQuestExtrasLow, "Low");
+                TunicRandomizer.Settings.MysterySeedWeights.HexQuestExtrasMedium = GUI.Toggle(new Rect(210f * guiScale, y, 90f * guiScale, 30f * guiScale), TunicRandomizer.Settings.MysterySeedWeights.HexQuestExtrasMedium, "Medium");
+                TunicRandomizer.Settings.MysterySeedWeights.HexQuestExtrasHigh = GUI.Toggle(new Rect(310f * guiScale, y, 90f * guiScale, 30f * guiScale), TunicRandomizer.Settings.MysterySeedWeights.HexQuestExtrasHigh, "High");
+
+                y += 35f * guiScale;
+                GUI.Label(new Rect(10f * guiScale, y, 300f * guiScale, 30f * guiScale), $"Fool Traps");
+                y += 30f * guiScale;
+                TunicRandomizer.Settings.MysterySeedWeights.FoolTrapNone = GUI.Toggle(new Rect(10f * guiScale, y, 90f * guiScale, 30f * guiScale), TunicRandomizer.Settings.MysterySeedWeights.FoolTrapNone, $"None");
+                TunicRandomizer.Settings.MysterySeedWeights.FoolTrapNormal = GUI.Toggle(new Rect(110f * guiScale, y, 90f * guiScale, 30f * guiScale), TunicRandomizer.Settings.MysterySeedWeights.FoolTrapNormal, $"<color={FoolColors[1]}>{FoolChoices[1]}</color>");
+                TunicRandomizer.Settings.MysterySeedWeights.FoolTrapDouble = GUI.Toggle(new Rect(210f * guiScale, y, 90f * guiScale, 30f * guiScale), TunicRandomizer.Settings.MysterySeedWeights.FoolTrapDouble, $"<color={FoolColors[2]}>{FoolChoices[2]}</color>");
+                TunicRandomizer.Settings.MysterySeedWeights.FoolTrapOnslaught = GUI.Toggle(new Rect(300f * guiScale, y, 100f * guiScale, 30f * guiScale), TunicRandomizer.Settings.MysterySeedWeights.FoolTrapOnslaught, $"<color={FoolColors[3]}>{FoolChoices[3]}</color>");
+
+                y += 35f * guiScale;
+                GUI.Label(new Rect(10f * guiScale, y, 400f * guiScale, 30f * guiScale), $"Hero's Laurels Location");
+                y += 30f * guiScale;
+                TunicRandomizer.Settings.MysterySeedWeights.LaurelsRandom = GUI.Toggle(new Rect(10f * guiScale, y, 90f * guiScale, 30f * guiScale), TunicRandomizer.Settings.MysterySeedWeights.LaurelsRandom, $"Random");
+                TunicRandomizer.Settings.MysterySeedWeights.LaurelsSixCoins = GUI.Toggle(new Rect(110f * guiScale, y, 90f * guiScale, 30f * guiScale), TunicRandomizer.Settings.MysterySeedWeights.LaurelsSixCoins, $"6 Coins");
+                TunicRandomizer.Settings.MysterySeedWeights.LaurelsTenCoins = GUI.Toggle(new Rect(210f * guiScale, y, 90f * guiScale, 30f * guiScale), TunicRandomizer.Settings.MysterySeedWeights.LaurelsTenCoins, $"10 Coins");
+                TunicRandomizer.Settings.MysterySeedWeights.LaurelsTenFairies = GUI.Toggle(new Rect(310f * guiScale, y, 90f * guiScale, 30f * guiScale), TunicRandomizer.Settings.MysterySeedWeights.LaurelsTenFairies, $"10 Fairies");
+            }
+            GUI.skin.button.fontSize = (int)(20 * guiScale);
+            y += 50f;
+            bool Close = GUI.Button(new Rect(10f * guiScale, 350f * guiScale, 187.5f, 30f), "Close");
+            if (Close) {
+                ShowMysterySeedWindow = false;
+                MysteryWindowPage = 0;
+                OptionsGUIPatches.SaveSettings();
+            }
+            bool SwitchPage = GUI.Button(new Rect(207.5f * guiScale, 350f * guiScale, 187.5f, 30f), MysteryWindowPage == 0 ? "Next Page >" : "< Prev Page");
+            if (SwitchPage) {
+                MysteryWindowPage = MysteryWindowPage == 0 ? 1 : 0;
+                OptionsGUIPatches.SaveSettings();
+            }
+            y += 40f;
+            bool ResetToDefault = GUI.Button(new Rect(10f * guiScale, 390f * guiScale, 385f, 30f), "Reset To Defaults");
+            if (ResetToDefault) {
+                TunicRandomizer.Settings.MysterySeedWeights = new MysterySeedWeights();
+                OptionsGUIPatches.SaveSettings();
+            }
+
+        }
+
         private static void CloseAPSettingsWindow() {
             ShowAPSettingsWindow = false;
             stringToEdit = "";
@@ -687,16 +810,36 @@ namespace TunicRandomizer {
                 GenericMessage.ShowMessage("<#FF0000>[death] \"<#FF0000>warning!\" <#FF0000>[death]\n\"Non-Randomizer file selected.\"\n\"Returning to menu.\"");
                 return false;
             }
-            if (SaveFile.GetString("archipelago player name") != "") {
-                if (SaveFile.GetString("archipelago player name") != TunicRandomizer.Settings.ConnectionSettings.Player || (Archipelago.instance.integration.connected && int.Parse(Archipelago.instance.integration.slotData["seed"].ToString()) != SaveFile.GetInt("seed"))) {
-                    TunicLogger.LogInfo("Save does not match connected slot! Connected to " + TunicRandomizer.Settings.ConnectionSettings.Player + " [seed " + Archipelago.instance.integration.slotData["seed"].ToString() + "] but slot name in save file is " + SaveFile.GetString("archipelago player name") + " [seed " + SaveFile.GetInt("seed") + "]");
-                    GenericMessage.ShowMessage("<#FF0000>[death] \"<#FF0000>warning!\" <#FF0000>[death]\n\"Save does not match connected slot.\"\n\"Returning to menu.\"");
-                    return false;
+            string errorMessage = "";
+            if (SaveFile.GetInt("archipelago") == 1 && SaveFile.GetString("archipelago player name") != "") {
+                if (!Archipelago.instance.IsConnected() || (Archipelago.instance.integration.connected && (SaveFile.GetString("archipelago player name") != Archipelago.instance.GetPlayerName(Archipelago.instance.GetPlayerSlot()) || int.Parse(Archipelago.instance.integration.slotData["seed"].ToString()) != SaveFile.GetInt("seed")))) {
+                    TunicRandomizer.Settings.ReadConnectionSettingsFromSaveFile();
+                    Archipelago.instance.Disconnect();
+                    errorMessage = Archipelago.instance.Connect();
                 }
-                Archipelago.instance.Connect();
-                if (!Archipelago.instance.integration.connected) {
-                    GenericMessage.ShowMessage("<#FF0000>[death] \"<#FF0000>warning!\" <#FF0000>[death]\n\"Failed to connect to Archipelago.\"\n\"Returning to menu.\"");
+                if (!Archipelago.instance.IsConnected()) {
+                    GenericMessage.ShowMessage($"<#FF0000>[death] \"<#FF0000>warning!\" <#FF0000>[death]\n\"Failed to connect to Archipelago:\"\n{errorMessage}\n\"Returning to title screen.\"");
                     return false;
+                } else if (SaveFlags.IsArchipelago()) {
+                    PlayerCharacterSpawn.OnArrivalCallback += (Action)(() => {
+                        List<long> locationsInLimbo = new List<long>();
+                        foreach (KeyValuePair<string, long> pair in Locations.LocationIdToArchipelagoId) {
+                            if (SaveFile.GetInt("randomizer picked up " + pair.Key) == 1 && !Archipelago.instance.integration.session.Locations.AllLocationsChecked.Contains(pair.Value) && Archipelago.instance.integration.session.Locations.AllMissingLocations.Contains(pair.Value)) {
+                                locationsInLimbo.Add(pair.Value);
+                            }
+                        }
+                        if (locationsInLimbo.Count > 0) {
+                            TunicLogger.LogInfo("here");
+                            LanguageLine line = ScriptableObject.CreateInstance<LanguageLine>();
+                            line.text = $"<#FFFF00>[death] \"<#FFFF00>attention!\" <#FFFF00>[death]\n" +
+                                $"\"Found {locationsInLimbo.Count} location{(locationsInLimbo.Count != 1 ? "s": "")} in the save file\"\n\"that {(locationsInLimbo.Count != 1 ? "were" : "was")} not sent to Archipelago.\"\n" +
+                                $"\"Send {(locationsInLimbo.Count != 1 ? "these" : "this")} location{(locationsInLimbo.Count != 1 ? "s" : "")} now?\"";
+                            if (TunicRandomizer.Settings.UseTrunicTranslations) {
+                                line.text = $"<#FFFF00>[death] <#FFFF00>uhtehn$uhn! <#FFFF00>[death]\nfownd \"{locationsInLimbo.Count}\" lOkA$uhn{(locationsInLimbo.Count != 1 ? "z" : "")} in #uh sAv fIl #aht\n{(locationsInLimbo.Count != 1 ? "wur" : "wawz")} nawt sehnt too RkipehluhgO.\nsehnd {(locationsInLimbo.Count != 1 ? "#Ez" : "#is")} lOkA$uhn{(locationsInLimbo.Count != 1 ? "z" : "")} now?";
+                            }
+                            GenericPrompt.ShowPrompt(line, (Action)(() => { Archipelago.instance.integration.session.Locations.CompleteLocationChecks(locationsInLimbo.ToArray()); }), (Action)(() => { }));
+                        }
+                    });
                 }
             }
             return true;
