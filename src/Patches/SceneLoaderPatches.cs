@@ -386,6 +386,18 @@ namespace TunicRandomizer {
                     GameObject.Instantiate(EnemyRandomizer.TuningFork, new Vector3(-183.9852f, 1f, -79.4829f), new Quaternion(0, 0, 0, 0)).SetActive(true);
                     GameObject.Instantiate(EnemyRandomizer.TuningFork, new Vector3(-166.9155f, 1f, -72.0338f), new Quaternion(0, 0, 0, 0)).SetActive(true);
                 }
+
+                // test stuff for start rando
+                if (true) {
+                    GameObject startPortal = new GameObject("Start Portal");
+                    startPortal.transform.position = new Vector3(8f, .5841f, -234f);
+                    startPortal.AddComponent<ScenePortal>();
+                    startPortal.GetComponent<ScenePortal>().destinationSceneName = "g_elements";
+                    startPortal.GetComponent<ScenePortal>().id = "start_portal";
+                    startPortal.GetComponent<ScenePortal>().optionalIDToSpawnAt = "start_portal";
+                    startPortal.GetComponent<BoxCollider>().isTrigger = true;
+                    startPortal.GetComponent<BoxCollider>().size = new Vector3(2, 2, 2);
+                }
             } else if (SceneName == "Swamp Redux 2") {
                 GhostHints.SpawnCathedralDoorGhost();
 
@@ -418,6 +430,9 @@ namespace TunicRandomizer {
                 }
             } else if (SceneName == "g_elements") {
                 GhostHints.SpawnLostGhostFox();
+                if (true) {
+                    SpawnRandomStartDestPortal();
+                }
             } else if (SceneName == "Posterity") {
                 GhostHints.SpawnRescuedGhostFox();
             } else if (SceneName == "Shop") {
@@ -584,6 +599,19 @@ namespace TunicRandomizer {
             scenePortal.destinationSceneName = "ziggurat2020_1";
             scenePortal.name = "Zig Skip Recovery";
             scenePortal.spawnTransform = gameObject.transform.GetChild(0).GetChild(0).GetChild(0);
+            gameObject.SetActive(true);
+        }
+
+        private static void SpawnRandomStartDestPortal() {
+            GameObject gameObject = GameObject.Instantiate<GameObject>(SpiritArenaTeleporterPrefab, new Vector3(8, 0, -14), SpiritArenaTeleporterPrefab.transform.rotation);
+            ScenePortal scenePortal = gameObject.transform.GetComponentInChildren<ScenePortal>();
+            scenePortal.id = "start_portal";
+            scenePortal.optionalIDToSpawnAt = "start_portal";
+            scenePortal.destinationSceneName = "Overworld Redux";
+            scenePortal.name = "Start Portal Destination";
+            scenePortal.spawnTransform = gameObject.transform.GetChild(0).GetChild(0).GetChild(0);
+            GameObject.Destroy(scenePortal.transform.GetParent().GetChild(1).gameObject);
+            scenePortal.transform.GetParent().GetParent().GetComponent<InteractionTrigger>().enabled = false;
             gameObject.SetActive(true);
         }
 

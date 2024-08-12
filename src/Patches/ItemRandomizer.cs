@@ -232,7 +232,7 @@ namespace TunicRandomizer {
 
                 // clear the inventory we use to determine access, put the Overworld region, unplaced items, and precollected items in it
                 FullInventory.Clear();
-                FullInventory.Add("Overworld", 1);
+                FullInventory.Add(TunicPortals.StartRegion, 1);
                 foreach (KeyValuePair<string, int> unplacedItem in UnplacedInventory) {
                     FullInventory.Add(unplacedItem.Key, unplacedItem.Value);
                 }
@@ -318,7 +318,7 @@ namespace TunicRandomizer {
                     if (SaveFile.GetInt(SaveFlags.EntranceRando) == 1) {
                         // this should keep looping until every portal either doesn't give a reward, or has already given its reward
                         testFullInventory.Clear();
-                        testFullInventory.Add("Overworld", 1);
+                        testFullInventory.Add(TunicPortals.StartRegion, 1);
                         foreach (KeyValuePair<string, int> unplacedItem in testUnplacedInventory) {
                             testFullInventory.Add(unplacedItem.Key, unplacedItem.Value);
                         }
@@ -516,7 +516,7 @@ namespace TunicRandomizer {
 
         // in non-ER, we want the actual sphere 1
         public static Dictionary<string, int> GetSphereOne(Dictionary<string, int> startInventory = null) {
-            Dictionary<string, int> Inventory = new Dictionary<string, int>() { { "Overworld", 1 } };
+            Dictionary<string, int> Inventory = new Dictionary<string, int>() { { TunicPortals.StartRegion, 1 } };
             Dictionary<string, PortalCombo> vanillaPortals = TunicPortals.VanillaPortals();
             if (startInventory == null) {
                 TunicUtils.AddListToDict(Inventory, PrecollectedItems);
@@ -561,10 +561,10 @@ namespace TunicRandomizer {
             return inventory;
         }
 
-        // In ER, we want sphere 1 to be in Overworld or adjacent to Overworld
+        // In ER, we want sphere 1 to be in the start region or adjacent to it
         public static Dictionary<string, int> GetERSphereOne(Dictionary<string, int> startInventory = null) {
             List<Portal> PortalInventory = new List<Portal>();
-            Dictionary<string, int> Inventory = new Dictionary<string, int>() { { "Overworld", 1 } };
+            Dictionary<string, int> Inventory = new Dictionary<string, int>() { { TunicPortals.StartRegion, 1 } };
 
             if (startInventory == null) {
                 TunicUtils.AddListToDict(Inventory, PrecollectedItems);
