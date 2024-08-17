@@ -35,7 +35,8 @@ namespace TunicRandomizer {
         private const int MASKLESS = 256;
         private const int MYSTERY_SEED = 512;
         private const int SHUFFLE_LADDERS = 1024;
-        private const int RANDOMIZE_HEX_QUEST = 2048;
+        private const int GRASS_RANDOMIZER = 2048;
+        private const int RANDOMIZE_HEX_QUEST = 4096;
 
         public GameModes GameMode {
             get;
@@ -139,6 +140,11 @@ namespace TunicRandomizer {
         }
 
         public bool ShuffleLadders {
+            get;
+            set;
+        }
+
+        public bool GrassRandomizer {
             get;
             set;
         }
@@ -248,6 +254,11 @@ namespace TunicRandomizer {
         }
 
         public bool FasterUpgrades {
+            get;
+            set;
+        }
+
+        public bool ShowRecentItems {
             get;
             set;
         }
@@ -407,6 +418,12 @@ namespace TunicRandomizer {
             set;
         }
 
+        // Misc/Debug Settings
+        public bool ShowPlayerPosition {
+            get;
+            set;
+        }
+
         public enum GameModes {
             RANDOMIZER,
             HEXAGONQUEST,
@@ -451,6 +468,7 @@ namespace TunicRandomizer {
             Maskless = false;
             MysterySeed = false;
             ShuffleLadders = false;
+            GrassRandomizer = false;
             RandomizeHexQuest = false;
             HexagonQuestRandomGoal = HexQuestValue.RANDOM;
             HexagonQuestRandomExtras = HexQuestValue.RANDOM;
@@ -478,6 +496,7 @@ namespace TunicRandomizer {
             BonusStatUpgradesEnabled = true;
             DisableChestInterruption = false;
             FasterUpgrades = false;
+            ShowRecentItems = true;
 
             // Other
             CameraFlip = false;
@@ -518,6 +537,9 @@ namespace TunicRandomizer {
             RandomFoxColorsEnabled = true;
             RealestAlwaysOn = false;
             UseCustomTexture = false;
+
+            // Misc/Debug
+            ShowPlayerPosition = false;
         }
 
         public string GetSettingsString() {
@@ -581,6 +603,7 @@ namespace TunicRandomizer {
                 Maskless = eval(logic, MASKLESS);
                 MysterySeed = eval(logic, MYSTERY_SEED);
                 ShuffleLadders = eval(logic, SHUFFLE_LADDERS);
+                GrassRandomizer = eval(logic, GRASS_RANDOMIZER);
                 RandomizeHexQuest = eval(logic, RANDOMIZE_HEX_QUEST);
 
                 int general = int.Parse(decodedSplit[7]);
@@ -654,7 +677,7 @@ namespace TunicRandomizer {
                     KeysBehindBosses, StartWithSwordEnabled, SwordProgressionEnabled,
                     ShuffleAbilities, EntranceRandoEnabled, ERFixedShop, PortalDirectionPairs, DecoupledER,
                     Lanternless, Maskless, MysterySeed, ShuffleLadders,
-                    RandomizeHexQuest
+                    GrassRandomizer, RandomizeHexQuest
                 };
             } else {
                 return new bool[] { 
@@ -664,7 +687,8 @@ namespace TunicRandomizer {
                     SaveFile.GetInt(SaveFlags.PortalDirectionPairs) == 1, SaveFile.GetInt(SaveFlags.Decoupled) == 1,
                     SaveFile.GetInt("randomizer ER fixed shop") == 1, SaveFile.GetInt(SaveFlags.LanternlessLogic) == 1,
                     SaveFile.GetInt(SaveFlags.MasklessLogic) == 1, SaveFile.GetInt("randomizer mystery seed") == 1, 
-                    SaveFile.GetInt(SaveFlags.LadderRandoEnabled) == 1, SaveFile.GetInt(SaveFlags.HexagonQuestRandomizedValues) == 1
+                    SaveFile.GetInt(SaveFlags.LadderRandoEnabled) == 1, SaveFile.GetInt(SaveFlags.GrassRandoEnabled) == 1,
+                    SaveFile.GetInt(SaveFlags.HexagonQuestRandomizedValues) == 1
                 };
             }
         }
@@ -718,6 +742,13 @@ namespace TunicRandomizer {
 
         public static void copySettings() {
             GUIUtility.systemCopyBuffer = TunicRandomizer.Settings.GetSettingsString();
+        }
+
+        public void ReadConnectionSettingsFromSaveFile() {
+            ConnectionSettings.Player = SaveFile.GetString(SaveFlags.ArchipelagoPlayerName);
+            ConnectionSettings.Port = SaveFile.GetInt(SaveFlags.ArchipelagoPort).ToString();
+            ConnectionSettings.Hostname = SaveFile.GetString(SaveFlags.ArchipelagoHostname);
+            ConnectionSettings.Password = SaveFile.GetString(SaveFlags.ArchipelagoPassword);
         }
     }
 }

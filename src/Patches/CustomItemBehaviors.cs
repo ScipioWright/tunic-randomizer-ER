@@ -20,15 +20,17 @@ namespace TunicRandomizer {
             Item GoldQuestagon = ScriptableObject.CreateInstance<Item>();
             ButtonAssignableItem DathStone = ScriptableObject.CreateInstance<ButtonAssignableItem>();
             ButtonAssignableItem Cape = ScriptableObject.CreateInstance<ButtonAssignableItem>();
+            ButtonAssignableItem LaurelsToggle = ScriptableObject.CreateInstance<ButtonAssignableItem>();
+            Item Grass = ScriptableObject.CreateInstance<Item>();
 
             LibrarianSword.name = "Librarian Sword";
-            LibrarianSword.collectionMessage = new LanguageLine();
+            LibrarianSword.collectionMessage = ScriptableObject.CreateInstance<LanguageLine>();
             LibrarianSword.collectionMessage.text = $"\"        ? ? ? (<#ca7be4>Lv. 3<#FFFFFF>)\"";
             LibrarianSword.controlAction = "";
             LibrarianSword.suppressQuantity = true;
 
             HeirSword.name = "Heir Sword";
-            HeirSword.collectionMessage = new LanguageLine();
+            HeirSword.collectionMessage = ScriptableObject.CreateInstance<LanguageLine>();
             HeirSword.collectionMessage.text = $"\"        ! ! ! (<#5de7cf>Lv. 4<#FFFFFF>)\"";
             HeirSword.controlAction = "";
             HeirSword.suppressQuantity = true;
@@ -56,6 +58,17 @@ namespace TunicRandomizer {
             StateVariable.stateVariableList.Add(GrantedCape);
             Cape.freeItemCountStateVar = GrantedCape;
 
+            Grass.name = "Grass";
+            Grass.collectionMessage = new LanguageLine();
+            Grass.collectionMessage.text = $"grahs!";
+            Grass.controlAction = "";
+
+            LaurelsToggle.name = "Hyperdash Toggle";
+            LaurelsToggle.collectionMessage = null;
+            LaurelsToggle.controlAction = "";
+            LaurelsToggle.icon = Inventory.GetItemByName("Hyperdash").icon;
+            LaurelsToggle.suppressQuantity = true;
+
             StateVariable GraveHintStateVar = ScriptableObject.CreateInstance<StateVariable>();
             GraveHintStateVar.name = "randomizer got all 6 grave items";
             StateVariable.stateVariableList.Add(GraveHintStateVar);
@@ -67,6 +80,7 @@ namespace TunicRandomizer {
             Inventory.itemList.Add(GoldQuestagon);
             Inventory.itemList.Add(DathStone);
             Inventory.itemList.Add(Cape);
+            Inventory.itemList.Add(Grass);
             Item Torch = Inventory.GetItemByName("Torch");
             for (int i = 0; i < Inventory.itemList.Count; i++) {
                 if (Inventory.itemList[i].name == "Sword") {
@@ -79,6 +93,7 @@ namespace TunicRandomizer {
                     Inventory.itemList.Add(Torch);
                 }
             }
+            Inventory.itemList.Add(LaurelsToggle);
             Item Spear = Inventory.GetItemByName("Spear");
             Inventory.itemList.Remove(Spear);
             Inventory.itemList.Add(Spear);
@@ -102,18 +117,18 @@ namespace TunicRandomizer {
                 }
 
                 
-                GameObject.Find("_Fox(Clone)/fox").GetComponent<CreatureMaterialManager>().originalMaterials = ModelSwaps.Items["GoldenTrophy_2"].GetComponent<MeshRenderer>().materials;
-                GameObject.Find("_Fox(Clone)/fox hair").GetComponent<CreatureMaterialManager>().originalMaterials = ModelSwaps.Items["GoldenTrophy_2"].GetComponent<MeshRenderer>().materials;
-                GameObject.Find("_Fox(Clone)/fox").GetComponent<CreatureMaterialManager>()._ghostMaterialArray = ModelSwaps.Items["GoldenTrophy_2"].GetComponent<MeshRenderer>().materials;
-                GameObject.Find("_Fox(Clone)/fox hair").GetComponent<CreatureMaterialManager>()._ghostMaterialArray = ModelSwaps.Items["GoldenTrophy_2"].GetComponent<MeshRenderer>().materials;
-                PaletteEditor.FoxCape.GetComponent<CreatureMaterialManager>().originalMaterials = ModelSwaps.Items["GoldenTrophy_2"].GetComponent<MeshRenderer>().materials;
-                PaletteEditor.FoxCape.GetComponent<CreatureMaterialManager>()._ghostMaterialArray = ModelSwaps.Items["GoldenTrophy_2"].GetComponent<MeshRenderer>().materials;
+                GameObject.Find("_Fox(Clone)/fox").GetComponent<CreatureMaterialManager>().originalMaterials = ModelSwaps.Items["Hexagon Gold"].GetComponent<MeshRenderer>().materials;
+                GameObject.Find("_Fox(Clone)/fox hair").GetComponent<CreatureMaterialManager>().originalMaterials = ModelSwaps.Items["Hexagon Gold"].GetComponent<MeshRenderer>().materials;
+                GameObject.Find("_Fox(Clone)/fox").GetComponent<CreatureMaterialManager>()._ghostMaterialArray = ModelSwaps.Items["Hexagon Gold"].GetComponent<MeshRenderer>().materials;
+                GameObject.Find("_Fox(Clone)/fox hair").GetComponent<CreatureMaterialManager>()._ghostMaterialArray = ModelSwaps.Items["Hexagon Gold"].GetComponent<MeshRenderer>().materials;
+                PaletteEditor.FoxCape.GetComponent<CreatureMaterialManager>().originalMaterials = ModelSwaps.Items["Hexagon Gold"].GetComponent<MeshRenderer>().materials;
+                PaletteEditor.FoxCape.GetComponent<CreatureMaterialManager>()._ghostMaterialArray = ModelSwaps.Items["Hexagon Gold"].GetComponent<MeshRenderer>().materials;
                 GameObject Hand = GameObject.Find("_Fox(Clone)/Fox/root/pelvis/chest/arm_upper.R/arm_lower.R/hand.R");
                 if (Hand != null) {
-                    Hand.transform.GetChild(1).GetComponent<MeshRenderer>().materials = ModelSwaps.Items["GoldenTrophy_2"].GetComponent<MeshRenderer>().materials;
+                    Hand.transform.GetChild(1).GetComponent<MeshRenderer>().materials = ModelSwaps.Items["Hexagon Gold"].GetComponent<MeshRenderer>().materials;
                     if (Hand.transform.childCount >= 12) {
-                        Hand.transform.GetChild(12).GetChild(4).GetComponent<MeshRenderer>().materials = ModelSwaps.Items["GoldenTrophy_2"].GetComponent<MeshRenderer>().materials;
-                        Hand.transform.GetChild(13).GetChild(4).GetComponent<MeshRenderer>().materials = ModelSwaps.Items["GoldenTrophy_2"].GetComponent<MeshRenderer>().materials;
+                        Hand.transform.GetChild(12).GetChild(4).GetComponent<MeshRenderer>().materials = ModelSwaps.Items["Hexagon Gold"].GetComponent<MeshRenderer>().materials;
+                        Hand.transform.GetChild(13).GetChild(4).GetComponent<MeshRenderer>().materials = ModelSwaps.Items["Hexagon Gold"].GetComponent<MeshRenderer>().materials;
                     }
                 }
 
@@ -130,6 +145,10 @@ namespace TunicRandomizer {
         }
 
         public static bool BoneItemBehavior_onActionButtonDown_PrefixPatch(BoneItemBehaviour __instance) {
+            if (__instance.item.name == "Hyperdash Toggle") {
+                Inventory.GetItemByName("Hyperdash").Quantity = Inventory.GetItemByName("Hyperdash").Quantity == 1 ? 0 : 1;
+                return false;
+            }
             if (__instance.item.name == "Torch") {
                 if (StateVariable.GetStateVariableByName("Is Night").BoolValue) {
                     __instance.confirmationPromptLine.text = $"wAk fruhm #is drEm\nahnd rEturn too \"Old House\"?";
@@ -211,6 +230,10 @@ namespace TunicRandomizer {
             bone.confirmationPromptLine = instance.gameObject.GetComponent<BoneItemBehaviour>().confirmationPromptLine;
             bone.item = Inventory.GetItemByName("Torch").TryCast<ButtonAssignableItem>();
             itemBehaviours.Add(bone);
+            BoneItemBehaviour bone2 = instance.gameObject.AddComponent<BoneItemBehaviour>();
+            bone2.confirmationPromptLine = instance.gameObject.GetComponent<BoneItemBehaviour>().confirmationPromptLine;
+            bone2.item = Inventory.GetItemByName("Hyperdash Toggle").TryCast<ButtonAssignableItem>();
+            itemBehaviours.Add(bone2);
             instance.itemBehaviours = itemBehaviours.ToArray();
         }
 
