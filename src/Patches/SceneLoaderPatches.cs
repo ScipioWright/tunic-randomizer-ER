@@ -18,6 +18,9 @@ namespace TunicRandomizer {
         public static GameObject SpiritArenaTeleporterPrefab;
         public static GameObject GlyphTowerTeleporterPrefab;
 
+        public static Dictionary<string, Dictionary<string, int>> BreakableDict = new Dictionary<string, Dictionary<string, int>>();
+        public static List<string> UncheckedScenes = Locations.SimplifiedSceneNames.Keys.ToList();
+
         public static bool SceneLoader_OnSceneLoaded_PrefixPatch(Scene loadingScene, LoadSceneMode mode, SceneLoader __instance) {
             // ladder storage fix
             if (PlayerCharacter.instance != null)
@@ -65,6 +68,25 @@ namespace TunicRandomizer {
         }
 
         public static void SceneLoader_OnSceneLoaded_PostfixPatch(Scene loadingScene, LoadSceneMode mode, SceneLoader __instance) {
+            // todo: remove later
+            if (BreakableDict.Count == 0) {
+                foreach (string sceneName in Locations.SimplifiedSceneNames.Keys) {
+                    BreakableDict[sceneName] = new Dictionary<string, int>();
+                }
+            }
+            List<GameObject> testlist = Resources.FindObjectsOfTypeAll<GameObject>().Where(breakable => breakable.transform.GetComponent<SmashableObject>() != null && !breakable.name.StartsWith("Hedgehog Trap") && breakable.active == true).ToList();
+            foreach (GameObject obj in testlist) {
+                TunicLogger.LogInfo($"{obj.name} is at {obj.transform.position}");
+            }
+            if (BreakableDict.ContainsKey(loadingScene.name) && BreakableDict[loadingScene.name].Count == 0) {
+                if (UncheckedScenes.Contains(loadingScene.name)) {
+                    UncheckedScenes.Remove(loadingScene.name);
+                }
+                foreach (GameObject obj in testlist) {
+                    TunicUtils.AddStringToDict(BreakableDict[loadingScene.name], obj.name);
+                }
+            }
+            TunicLogger.LogInfo($"There are {testlist.Count} breakables in {loadingScene.name}");
 
             ModelSwaps.SwappedThisSceneAlready = false;
             EnemyRandomizer.RandomizedThisSceneAlready = false;
@@ -605,6 +627,8 @@ namespace TunicRandomizer {
             if (SaveFile.GetInt("seed") != 0 && TunicRandomizer.Settings.CreateSpoilerLog && !TunicRandomizer.Settings.RaceMode) {
                 ItemTracker.PopulateSpoilerLog();
             }
+
+
         }
 
         private static void SpawnHeirFastTravel(string SceneName, Vector3 position) {
