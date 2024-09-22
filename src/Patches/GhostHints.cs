@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using static TunicRandomizer.SaveFlags;
 
 namespace TunicRandomizer {
@@ -36,10 +37,12 @@ namespace TunicRandomizer {
             public string HexQuestAbilityHint;
             public bool FishingPole;
             public TransformData FishingRodPos;
+            public int CameraOverride;
+            public float InteractRadiusOverride;
 
             public HintGhost() { }
 
-            public HintGhost(string name, string sceneName, Vector3 position, Quaternion rotation, NPC.NPCAnimState animState, string dialogue, bool fishingPole = false, TransformData fishingRodPos = new TransformData()) {
+            public HintGhost(string name, string sceneName, Vector3 position, Quaternion rotation, NPC.NPCAnimState animState, string dialogue, bool fishingPole = false, TransformData fishingRodPos = new TransformData(), int cameraYOverride = -1, float interactRadiusOverride = -1) {
                 Name = name;
                 SceneName = sceneName;
                 Position = position;
@@ -53,8 +56,10 @@ namespace TunicRandomizer {
                 CheckId = "";
                 FishingPole = fishingPole;
                 FishingRodPos = fishingRodPos;
+                CameraOverride = cameraYOverride;
+                InteractRadiusOverride = interactRadiusOverride;
             }
-            public HintGhost(string name, string sceneName, Vector3 position, Quaternion rotation, NPC.NPCAnimState animState, string dialogue, string trunicDialogue, bool fishingPole = false, TransformData fishingRodPos = new TransformData()) {
+            public HintGhost(string name, string sceneName, Vector3 position, Quaternion rotation, NPC.NPCAnimState animState, string dialogue, string trunicDialogue, bool fishingPole = false, TransformData fishingRodPos = new TransformData(), int cameraYOverride = -1, float interactRadiusOverride = -1) {
                 Name = name;
                 SceneName = sceneName;
                 Position = position;
@@ -68,6 +73,8 @@ namespace TunicRandomizer {
                 CheckId = "";
                 FishingPole = fishingPole;
                 FishingRodPos = fishingRodPos;
+                CameraOverride = cameraYOverride;
+                InteractRadiusOverride = interactRadiusOverride;
             }
         }
 
@@ -227,7 +234,7 @@ namespace TunicRandomizer {
             },
             { "Ruined Shop", new List<HintGhost>() {
                 new HintGhost("Hint Ghost Ruined Shop 1", "Ruined Shop", new Vector3(16.5333f, 8.983299f, -45.60382f), new Quaternion(0f, 0.7071068f, 0f, -0.7071068f), NPC.NPCAnimState.SIT, $"hehlO. wuht iz yor nAm?---...tuhnk? wuht A strAnj nAm."),
-                new HintGhost("Hint Ghost Ruined Shop 2", "Ruined Shop", new Vector3(9.8111f, 8.0833f, -37.52119f), new Quaternion(0f, 0.9659258f, 0f, 0.2588191f), NPC.NPCAnimState.IDLE, $"wehl, if yur nawt bIi^ ehnE%i^..." ) }
+                new HintGhost("Hint Ghost Ruined Shop 2", "Ruined Shop", new Vector3(9.8111f, 8.0833f, -37.52119f), new Quaternion(0f, 0.9659258f, 0f, 0.2588191f), NPC.NPCAnimState.IDLE, $"wehl, if yur nawt bIi^ ehnE%i^...", interactRadiusOverride: 4 ) }
             },
             { "West Filigree", new List<HintGhost>() {
                 new HintGhost("Hint Ghost West Filigree", "Town_FiligreeRoom", new Vector3(-79.4348f, 22.0379f, -59.8104f), new Quaternion(0f, 1f, 0f, -4.371139E-08f), NPC.NPCAnimState.PRAY, $"wow, yoo hahv #uh powur uhv #uh \"Holy Cross!\"", $"wow, yoo hahv #uh powur uhv #uh hOlE kraws!") }
@@ -316,6 +323,9 @@ namespace TunicRandomizer {
                 new HintGhost("Hint Ghost Frog's Domain 1", "frog cave main", new Vector3(19.7682f, 9.1943f, -23.3269f), new Quaternion(0f, 1f, 0f, -4.371139E-08f), NPC.NPCAnimState.FISHING, $"I wuhndur wAr #uh kwehstuhgawn iz?"),
                 new HintGhost("Hint Ghost Frog's Domain 2", "frog cave main", new Vector3(27.09619f, 9.2581f, -37.28336f), new Quaternion(0f, 0.5000001f, 0f, -0.8660254f), NPC.NPCAnimState.FISHING, $"$hhh. Im hIdi^ fruhm #uh frawgs.") }
             },
+            { "Quarry Entrance", new List<HintGhost>() {
+                new HintGhost("Hint Ghost Quarry Entrance", "Darkwoods Tunnel", new Vector3(102.7876f, 11.8391f, 9.2092f), new Quaternion(0f, 0f, 0f, 1f), NPC.NPCAnimState.GAZE, $"I kahnt juhmp fR inuhf too rEj #aht %i^...", cameraYOverride: 150), }
+            },
         };
 
         public static Dictionary<string, List<HintGhost>> EntranceRandoGhostLocations = new Dictionary<string, List<HintGhost>>() {
@@ -358,16 +368,6 @@ namespace TunicRandomizer {
         }
 
         public static void SpawnHintGhosts(string SceneName) {
-            bool spawnAllTest = true;
-            if (spawnAllTest) {
-                foreach(List<HintGhost> list in GhostLocations.Values) {
-                    list.ForEach(ghost => SpawnHintGhost(ghost));
-                }
-                foreach (List<HintGhost> list in EntranceRandoGhostLocations.Values) {
-                    list.ForEach(ghost => SpawnHintGhost(ghost));
-                }
-                return;
-            } 
             foreach (HintGhost HintGhost in HintGhosts.Values) {
                 if (HintGhost.SceneName == SceneName) {
                     SpawnHintGhost(HintGhost);
@@ -376,6 +376,9 @@ namespace TunicRandomizer {
         }
 
         private static void SpawnHintGhost(HintGhost hintGhost) {
+            if (hintGhost.SceneName != SceneManager.GetActiveScene().name) {
+                return;
+            }
             GhostFox.GetComponent<NPC>().nPCAnimState = hintGhost.AnimState;
             GameObject NewGhostFox = GameObject.Instantiate(GhostFox);
             NewGhostFox.name = hintGhost.Name;
@@ -392,6 +395,21 @@ namespace TunicRandomizer {
             if (hintGhost.FishingPole) {
                 GameObject fishingRod = GameObject.Instantiate(ModelSwaps.FishingRod, hintGhost.FishingRodPos.pos, hintGhost.FishingRodPos.rot);
                 fishingRod.SetActive(true);
+            }
+
+            if (hintGhost.InteractRadiusOverride != -1) {
+                NewGhostFox.GetComponent<SphereCollider>().radius = hintGhost.InteractRadiusOverride;
+            }
+
+            if (hintGhost.CameraOverride != -1 && NewGhostFox.GetComponent<NPC>().cameraOverrideTrigger != null) {
+                NewGhostFox.GetComponent<NPC>().cameraOverrideTrigger.data.eulerY = hintGhost.CameraOverride;
+            }
+
+            if (hintGhost.SceneName == "Library Lab") {
+                if (StateVariable.GetStateVariableByName("Is Night").BoolValue) {
+                    NewGhostFox.SetActive(false);
+                    return;
+                }
             }
 
             NewGhostFox.SetActive(true);
@@ -465,7 +483,6 @@ namespace TunicRandomizer {
                 HintGhosts = HintGhosts.Take(Hints.Count).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             }
             foreach (HintGhost HintGhost in HintGhosts.Values) {
-                TunicLogger.LogInfo(HintGhost.Name + " " + HintGhost.SceneName);
                 (string, string, string, string) Hint = Hints[random.Next(Hints.Count)];
                 HintGhost.Hint = Hint.Item1;
                 HintGhost.HintedItem = Hint.Item2;
@@ -736,16 +753,18 @@ namespace TunicRandomizer {
         }
 
         public static void SpawnTorchHintGhost() {
-            GhostFox.GetComponent<NPC>().nPCAnimState = NPC.NPCAnimState.SIT;
-            GameObject TorchFox = GameObject.Instantiate(GhostFox);
-            TorchFox.transform.position = new Vector3(-12.3128f, 11.9833f, -145.3333f);
-            TorchFox.transform.transform.localEulerAngles = new Vector3(0f, 180f, 0f);
+            if (SceneManager.GetActiveScene().name == "Overworld Redux") {
+                GhostFox.GetComponent<NPC>().nPCAnimState = NPC.NPCAnimState.SIT;
+                GameObject TorchFox = GameObject.Instantiate(GhostFox);
+                TorchFox.transform.position = new Vector3(-12.3128f, 11.9833f, -145.3333f);
+                TorchFox.transform.transform.localEulerAngles = new Vector3(0f, 180f, 0f);
 
-            LanguageLine TorchFoxScript = ScriptableObject.CreateInstance<LanguageLine>();
-            TorchFoxScript.text = $"bE kArfuhl, tInE fawks. %i^z Ruhnt #uh wA #A sEm.---I sE yoo hahv A torJ [torch]?\n\"USE\" it too rEturn hEr, \"IF\" yoo bEkuhm \"LOST.\"";
-            TorchFox.GetComponent<NPC>().script = TorchFoxScript;
+                LanguageLine TorchFoxScript = ScriptableObject.CreateInstance<LanguageLine>();
+                TorchFoxScript.text = $"bE kArfuhl, tInE fawks. %i^z Ruhnt #uh wA #A sEm.---I sE yoo hahv A torJ [torch]?\n\"USE\" it too rEturn hEr, \"IF\" yoo bEkuhm \"LOST.\"";
+                TorchFox.GetComponent<NPC>().script = TorchFoxScript;
 
-            TorchFox.SetActive(true);
+                TorchFox.SetActive(true);
+            }
         }
 
         public static void SpawnLostGhostFox() {
