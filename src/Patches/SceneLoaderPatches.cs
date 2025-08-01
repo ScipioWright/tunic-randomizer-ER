@@ -102,6 +102,8 @@ namespace TunicRandomizer {
             // undoing the rotation trap
             CameraController.DerekRotationEnabled = false;
 
+            PlayerCharacterPatches.CalculateHeirAssistDamage();
+
             return true;
         }
 
@@ -693,7 +695,7 @@ namespace TunicRandomizer {
             if (SaveFile.GetInt("seed") != 0 && TunicRandomizer.Settings.CreateSpoilerLog && !TunicRandomizer.Settings.RaceMode) {
                 ItemTracker.PopulateSpoilerLog();
             }
-
+            PlayerCharacterPatches.CalculateHeirAssistDamage();
             SecretMayor.Setup(loadingScene);
         }
 

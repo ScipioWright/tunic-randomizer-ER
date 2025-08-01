@@ -26,6 +26,7 @@ namespace TunicRandomizer {
         public static float TimeWhenLastChangedDayNight = 0.0f;
         public static float ResetDayNightTimer = -1.0f;
         public static LadderEnd LastLadder = null;
+        public static float TailSize = 0f;
 
         public static void PlayerCharacter_creature_Awake_PostfixPatch(PlayerCharacter __instance) {
 
@@ -157,6 +158,8 @@ namespace TunicRandomizer {
                 Vector3 scale = __instance.gameObject.transform.localScale;
                 __instance.gameObject.transform.localScale = new Vector3(2f, scale.y, scale.z);
             }
+
+            __instance.gameObject.transform.Find("Fox/root/pelvis/tail_main").localScale = Vector3.one * TailSize;
 
             __instance.gameObject.transform.Find("fox hair").GetComponent<Renderer>().enabled = !FoolTrap.BaldFox;
 
@@ -1045,6 +1048,8 @@ namespace TunicRandomizer {
                 List<Check> checks = TunicUtils.GetAllInUseChecks();
                 int denominator = checks.Count / 20;
                 HeirAssistModeDamageValue = checks.Where(check => check.IsCompletedOrCollected).ToList().Count / denominator;
+                TailSize = 2f * (float)checks.Where(check => check.IsCompletedOrCollected).ToList().Count / (float)denominator;
+                TunicLogger.LogInfo("tail size will be " + TailSize.ToString());
             } catch (Exception e) {
                 TunicLogger.LogInfo("Error calculating damage value for easier heir fight!");
                 HeirAssistModeDamageValue = 0;

@@ -505,7 +505,7 @@ namespace TunicRandomizer {
             TunicRandomizer.Settings.SkipItemAnimations = SkipAnimationsValue;
 
             RecentItemsDisplay.instance.EnqueueItem(itemInfo, true);
-
+            PlayerCharacterPatches.CalculateHeirAssistDamage();
             return ItemResult.Success;
         }
 
@@ -766,6 +766,7 @@ namespace TunicRandomizer {
             if (SaveFile.GetInt(GrassRandoEnabled) == 0 && TunicRandomizer.Settings.CreateSpoilerLog && !TunicRandomizer.Settings.RaceMode) {
                 ItemTracker.PopulateSpoilerLog();
             }
+            PlayerCharacterPatches.CalculateHeirAssistDamage();
         }
 
         public static void ToggleHolyCrossObjects(bool isEnabled) {
