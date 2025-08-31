@@ -5220,6 +5220,11 @@ namespace TunicRandomizer {
                             }
                         }
                     },
+                    {
+                        "Rooted Ziggurat Lower Mid Checkpoint",
+                        new List<List<string>> {
+                        }
+                    },
                 }
             },
             {

@@ -159,7 +159,7 @@ namespace TunicRandomizer {
                 __instance.gameObject.transform.localScale = new Vector3(2f, scale.y, scale.z);
             }
 
-            __instance.gameObject.transform.Find("Fox/root/pelvis/tail_main").localScale = Vector3.one * TailSize;
+            //__instance.gameObject.transform.Find("Fox/root/pelvis/tail_main").localScale = Vector3.one * TailSize;
 
             __instance.gameObject.transform.Find("fox hair").GetComponent<Renderer>().enabled = !FoolTrap.BaldFox;
 
@@ -425,6 +425,8 @@ namespace TunicRandomizer {
             }
 
             SecretMayor.Setup(SceneManager.GetActiveScene());
+
+            GameObject tail2 = GameObject.Instantiate(__instance.gameObject.transform.Find("Fox/root/pelvis/tail_main").gameObject, __instance.gameObject.transform.Find("Fox/root/pelvis"));
         }
 
         private static void PlayerCharacter_Start_SinglePlayerSetup() {
