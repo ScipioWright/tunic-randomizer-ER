@@ -265,9 +265,7 @@ namespace TunicRandomizer {
             if (Item.Type == ItemTypes.GRASS) {
                 ItemPresentation.PresentItem(Inventory.GetItemByName("Grass"));
                 Inventory.GetItemByName("Grass").Quantity += 1;
-                TunicLogger.LogInfo("grass");
                 if (TunicRandomizer.Settings.FoolTrapIntensity == RandomizerSettings.FoolTrapOption.ONSLAUGHT) {
-                    TunicLogger.LogInfo("grass2");
                     (_, _) = FoolTrap.ApplyRandomFoolEffect(itemInfo.Player);
                 }
             }
