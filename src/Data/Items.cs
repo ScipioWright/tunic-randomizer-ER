@@ -615,6 +615,7 @@ namespace TunicRandomizer {
             { RandomizerSettings.FoolTrapOption.NORMAL, 15 },
             { RandomizerSettings.FoolTrapOption.DOUBLE, 32 },
             { RandomizerSettings.FoolTrapOption.ONSLAUGHT, 50 },
+            { RandomizerSettings.FoolTrapOption.SUFFERING, 50 }
         };
     }
 

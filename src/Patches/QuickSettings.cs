@@ -9,8 +9,8 @@ namespace TunicRandomizer {
 
         public static string CustomSeed = "";
         public static Font OdinRounded;
-        public static List<string> FoolChoices = new List<string>() { "Off", "Normal", "Double", "Onslaught" };
-        public static List<string> FoolColors = new List<string>() { "white", "#4FF5D4", "#E3D457", "#FF3333" };
+        public static List<string> FoolChoices = new List<string>() { "Off", "Normal", "Double", "Onslaught", "Suffering" };
+        public static List<string> FoolColors = new List<string>() { "white", "#4FF5D4", "#E3D457", "#FF3333", "#FF3333" };
         private static bool ShowAdvancedSinglePlayerOptions = false;
         private static bool ShowAPSettingsWindow = false;
         private static bool ShowMysterySeedWindow = false;
@@ -728,6 +728,10 @@ namespace TunicRandomizer {
                 bool OnslaughtFools = GUI.Toggle(new Rect(290f * guiScale, advHeight, 100f * guiScale, 30f * guiScale), TunicRandomizer.Settings.FoolTrapIntensity == RandomizerSettings.FoolTrapOption.ONSLAUGHT, "<color=#FF3333>Onslaught</color>");
                 if (OnslaughtFools) {
                     TunicRandomizer.Settings.FoolTrapIntensity = RandomizerSettings.FoolTrapOption.ONSLAUGHT;
+                }
+                bool SufferingFools = GUI.Toggle(new Rect(290f * guiScale, advHeight - 30f, 100f * guiScale, 30f * guiScale), TunicRandomizer.Settings.FoolTrapIntensity == RandomizerSettings.FoolTrapOption.SUFFERING, "<color=#FF3333>Suffering</color>");
+                if (SufferingFools) {
+                    TunicRandomizer.Settings.FoolTrapIntensity = RandomizerSettings.FoolTrapOption.SUFFERING;
                 }
                 advHeight += 40f * guiScale;
                 GUI.Label(new Rect(10f * guiScale, advHeight, 300f * guiScale, 30f * guiScale), $"Hero's Laurels Location");

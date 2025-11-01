@@ -156,6 +156,11 @@ namespace TunicRandomizer {
                             Locations.CheckedLocations[grassId] = true;
                             SaveFile.SetInt("randomizer picked up " + check.CheckId, 1);
                             TunicRandomizer.Tracker.SetCollectedItem("Grass", false);
+                            TunicLogger.LogInfo("Grass");
+                            if (TunicRandomizer.Settings.FoolTrapIntensity == RandomizerSettings.FoolTrapOption.SUFFERING) {
+                                TunicLogger.LogInfo("grass2");
+                                (_, _) = FoolTrap.ApplyRandomFoolEffect(-1);
+                            }
                         } else {
                             if (item.Name == "Fool Trap") {
                                 foreach (Transform child in __instance.GetComponentsInChildren<Transform>()) {

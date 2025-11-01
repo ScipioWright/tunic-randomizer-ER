@@ -528,6 +528,7 @@ namespace TunicRandomizer {
             NORMAL,
             DOUBLE,
             ONSLAUGHT,
+            SUFFERING,
         }
 
         public enum FixedLaurelsType {

@@ -55,7 +55,7 @@ namespace TunicRandomizer {
             OptionsGUI OptionsGUI = GameObject.FindObjectOfType<OptionsGUI>();
             Il2CppStringArray GameModes = (Il2CppStringArray)new string[] { "<#FFA300>Randomizer", "<#ffd700>Hexagon Quest", "<#4FF5D4>Vanilla" };
             Il2CppStringArray LaurelsLocations = (Il2CppStringArray)new string[] { "<#FFA300>Random", "<#ffd700>6 Coins", "<#ffd700>10 Coins", "<#ffd700>10 Fairies" };
-            Il2CppStringArray FoolTrapOptions = (Il2CppStringArray)new string[] { "<#FFFFFF>None", "<#4FF5D4>Normal", "<#E3D457>Double", "<#FF3333>Onslaught" };
+            Il2CppStringArray FoolTrapOptions = (Il2CppStringArray)new string[] { "<#FFFFFF>None", "<#4FF5D4>Normal", "<#E3D457>Double", "<#FF3333>Onslaught", "<#FF3333>Suffering" };
             // I just copied these down without considering the color much, feel free to recolor then delete this comment
             Il2CppStringArray IceGrapplingOptions = (Il2CppStringArray)new string[] { "<#FFFFFF>None", "<#4FF5D4>Easy", "<#E3D457>Medium", "<#FF3333>Hard" };
             Il2CppStringArray LadderStorageOptions = (Il2CppStringArray)new string[] { "<#FFFFFF>None", "<#4FF5D4>Easy", "<#E3D457>Medium", "<#FF3333>Hard" };
