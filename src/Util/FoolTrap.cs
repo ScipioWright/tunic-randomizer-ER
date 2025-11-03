@@ -34,18 +34,18 @@ namespace TunicRandomizer {
         }
 
         public static Dictionary<TrapType, Trap> Traps = new Dictionary<TrapType, Trap> {
-            {TrapType.Ice, new Trap("Ice Trap", 30) },
+            {TrapType.Ice, new Trap("Ice Trap", 1) },
             {TrapType.Fire, new Trap("Fire Trap", 20) },
             {TrapType.Bee, new Trap("Bee Trap", 15) },
             {TrapType.Tiny, new Trap("Tiny Trap", 15) },
-            {TrapType.Mirror, new Trap("Screen Flip Trap", 10) },
-            {TrapType.Deisometric, new Trap("Deisometric Trap", 10) },
-            {TrapType.Trip, new Trap("Trip Trap", 0) },
+            {TrapType.Mirror, new Trap("Screen Flip Trap", 5) },
+            {TrapType.Deisometric, new Trap("Deisometric Trap", 5) },
+            {TrapType.Trip, new Trap("Trip Trap", 20) },
             {TrapType.Zoom, new Trap("Zoom Trap", 5) },
-            {TrapType.Bald, new Trap("Bald Trap", 0) },
+            {TrapType.Bald, new Trap("Bald Trap", 15) },
             {TrapType.Home, new Trap("Home Trap", 0) },
-            {TrapType.Whoops, new Trap("Whoops! Trap", 0) },
-            {TrapType.Wide, new Trap("W I D E Trap", 0) },
+            {TrapType.Whoops, new Trap("Whoops! Trap", 5) },
+            {TrapType.Wide, new Trap("W I D E Trap", 2) },
         };
 
         // for TrapLink, we convert names of similar traps to our trap types for receiving traps
@@ -169,6 +169,12 @@ namespace TunicRandomizer {
                 if (trapType == TrapType.Zoom && CameraController.DerekZoom == 0.5f) {
                     continue;
                 }
+                if (trapType == TrapType.Bald && BaldFox) {
+                    continue;
+                }
+                if (trapType == TrapType.Wide && WideFox) {
+                    continue;
+                }
                 weightedTrapList.AddRange(Enumerable.Repeat(trapType, Traps[trapType].Weight));
             }
             TrapType trapSelected = weightedTrapList[Random.Next(weightedTrapList.Count)];
@@ -187,7 +193,7 @@ namespace TunicRandomizer {
         }
 
         public static (string, string) FoolIceTrap() {
-            PlayerCharacter.ApplyRadiationAsDamageInHP(PlayerCharacter.instance.maxhp * .2f);
+            PlayerCharacter.ApplyRadiationAsDamageInHP(PlayerCharacter.instance.maxhp * .05f);
             SFX.PlayAudioClipAtFox(PlayerCharacter.instance.bigHurtSFX);
             SFX.PlayAudioClipAtFox(PlayerCharacter.standardFreezeSFX);
             PlayerCharacter.instance.AddFreezeTime(3f);
@@ -209,7 +215,7 @@ namespace TunicRandomizer {
 
         public static (string, string) FoolBeeTrap() {
             SFX.PlayAudioClipAtFox(PlayerCharacter.instance.bigHurtSFX);
-            PlayerCharacter.instance.IDamageable_ReceiveDamage(PlayerCharacter.instance.hp / 3, 0, Vector3.zero, 0, 0);
+            //PlayerCharacter.instance.IDamageable_ReceiveDamage(PlayerCharacter.instance.hp / 3, 0, Vector3.zero, 0, 0);
             string FoolMessageTop = $"yoo R A \"<#ffd700>FOOL<#ffffff>!!\" [fooltrap]";
             string FoolMessageBottom = $"\"(\"it wuhz A swRm uhv <#ffd700>bEz\"...)\"";
             StungByBee = true;
@@ -219,7 +225,7 @@ namespace TunicRandomizer {
 
         public static (string, string) FoolTinyTrap() {
             SFX.PlayAudioClipAtFox(PlayerCharacter.instance.bigHurtSFX);
-            PlayerCharacter.instance.IDamageable_ReceiveDamage(PlayerCharacter.instance.hp / 3, 0, Vector3.zero, 0, 0);
+            //PlayerCharacter.instance.IDamageable_ReceiveDamage(PlayerCharacter.instance.hp / 3, 0, Vector3.zero, 0, 0);
             string FoolMessageTop = $"yoo R A <#FFA500>tInE \"<#FFA500>FOOL<#ffffff>!!\" [fooltrap]";
             string FoolMessageBottom = $"hahf #uh sIz, duhbuhl #uh kyoot.";
             TinierFox = true;
@@ -229,7 +235,7 @@ namespace TunicRandomizer {
 
         public static (string, string) FoolMirrorTrap() {
             SFX.PlayAudioClipAtFox(PlayerCharacter.instance.bigHurtSFX);
-            PlayerCharacter.instance.IDamageable_ReceiveDamage(PlayerCharacter.instance.hp / 3, 0, Vector3.zero, 0, 0);
+            //PlayerCharacter.instance.IDamageable_ReceiveDamage(PlayerCharacter.instance.hp / 3, 0, Vector3.zero, 0, 0);
             string FoolMessageTop = $"[fooltrap] \"!!\"<#FF00FF>lfoo \"A ERA UOY\"";
             string FoolMessageBottom = $"tAk uh mOmint too ruhflehkt.";
             CameraController.Flip = true;
@@ -240,7 +246,7 @@ namespace TunicRandomizer {
         public static (string, string) FoolDeisometricTrap() {
             System.Random Random = new System.Random();
             SFX.PlayAudioClipAtFox(PlayerCharacter.instance.bigHurtSFX);
-            PlayerCharacter.instance.IDamageable_ReceiveDamage(PlayerCharacter.instance.hp / 3, 0, Vector3.zero, 0, 0);
+            //PlayerCharacter.instance.IDamageable_ReceiveDamage(PlayerCharacter.instance.hp / 3, 0, Vector3.zero, 0, 0);
             string FoolMessageTop = $"yoo R A <#FFA500>toopointfIvdE \"<#FFA500>FOOL<#ffffff>!!\" [fooltrap]";
             string FoolMessageBottom = $"toonik iz ahn IsOmehtrik... wAt, wuht?";
             CameraController.DerekRotationEnabled = true;
