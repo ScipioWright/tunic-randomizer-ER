@@ -555,6 +555,7 @@ namespace TunicRandomizer {
                 RecentItemsDisplay.instance.EnqueueItem(itemInfo, true);
             }
 
+            PlayerCharacterPatches.CalculateHeirAssistDamage();
             return ItemResult.Success;
         }
 
@@ -835,6 +836,8 @@ namespace TunicRandomizer {
             if (SaveFile.GetInt(GrassRandoEnabled) == 0 && TunicRandomizer.Settings.CreateSpoilerLog && !TunicRandomizer.Settings.RaceMode) {
                 ItemTracker.PopulateSpoilerLog();
             }
+
+            PlayerCharacterPatches.CalculateHeirAssistDamage();
         }
 
         private static Dictionary<int, (string, string, string, string)> getHexagonUnlockInfo() {

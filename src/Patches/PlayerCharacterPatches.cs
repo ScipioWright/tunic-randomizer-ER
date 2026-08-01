@@ -23,6 +23,7 @@ namespace TunicRandomizer {
         public static float ResetDayNightTimer = -1.0f;
         public static LadderEnd LastLadder = null;
         public static Renderer foxHair = null;
+        public static float TailSize = 0f;
 
         // for trying to detect a wrong warp and save the fox
         public static int timesDeathplaneTriggeredThisScene = 0;
@@ -140,6 +141,8 @@ namespace TunicRandomizer {
                 Vector3 scale = __instance.gameObject.transform.localScale;
                 __instance.gameObject.transform.localScale = new Vector3(2f, scale.y, scale.z);
             }
+
+            __instance.gameObject.transform.Find("Fox/root/pelvis/tail_main").localScale = Vector3.one * TailSize;
 
             if (foxHair != null) {
                 foxHair.enabled = !FoolTrap.BaldFox;
@@ -411,6 +414,7 @@ namespace TunicRandomizer {
             }
 
             SecretMayor.Setup(SceneManager.GetActiveScene());
+            GameObject tail2 = GameObject.Instantiate(__instance.gameObject.transform.Find("Fox/root/pelvis/tail_main").gameObject, __instance.gameObject.transform.Find("Fox/root/pelvis"));
         }
 
         private static void PlayerCharacter_Start_SinglePlayerSetup() {
@@ -1128,6 +1132,8 @@ namespace TunicRandomizer {
                 List<Check> checks = TunicUtils.GetAllInUseChecks();
                 int denominator = checks.Count / 20;
                 HeirAssistModeDamageValue = checks.Where(check => check.IsCompletedOrCollected).ToList().Count / denominator;
+                TailSize = 2f * (float)checks.Where(check => check.IsCompletedOrCollected).ToList().Count / (float)denominator;
+                TunicLogger.LogInfo("tail size will be " + TailSize.ToString());
             } catch (Exception e) {
                 TunicLogger.LogInfo("Error calculating damage value for easier heir fight!");
                 HeirAssistModeDamageValue = 0;

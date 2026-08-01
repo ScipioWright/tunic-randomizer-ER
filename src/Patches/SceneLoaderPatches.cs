@@ -119,6 +119,8 @@ namespace TunicRandomizer {
 
             CRTMode.Toggle();
 
+            PlayerCharacterPatches.CalculateHeirAssistDamage();
+
             return true;
         }
 
@@ -758,6 +760,7 @@ namespace TunicRandomizer {
             }
 
             SecretMayor.Setup(loadingScene);
+            PlayerCharacterPatches.CalculateHeirAssistDamage();
         }
 
         private static void SpawnHeirFastTravel(string SceneName, Vector3 position) {
