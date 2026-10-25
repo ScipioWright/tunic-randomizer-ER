@@ -996,7 +996,8 @@ namespace TunicRandomizer {
                     OldHouseDoorUnstuck = false;
                 }
                 if (WellUnstuck == true) {
-                    // todo: choose where the player goes, get them off the ladder
+                    PlayerCharacter.instance.transform.position = new Vector3(-32, 40, -1);
+                    PlayerCharacter.instance.transform.rotation = new Quaternion(0, 180, 0, 0);
                     WellUnstuck = false;
                 }
                 storedPortal.GetComponent<BoxCollider>().isTrigger = true;
