@@ -254,6 +254,14 @@ namespace TunicRandomizer {
                 plando = new Dictionary<string, string> { {"Windmill Entrance", "Shop Portal 1" } };
             }
 
+            // for testing, this is the best place to set plando connections
+            plando = new Dictionary<string, string> {
+                {"Old House Door Entrance", "Well Ladder Entrance"},
+                {"Well Ladder Entrance", "Library Rotunda Lower Exit"},
+                {"Library Rotunda Lower Exit", "Library Rotunda Upper Exit"},
+                {"Library Rotunda Upper Exit", "Old House Door Entrance"},
+            };
+
             List<PortalCombo> randomizedPortals = RandomizePortals(seed, plando);
 
             foreach (PortalCombo portalCombo in randomizedPortals) {
@@ -943,11 +951,6 @@ namespace TunicRandomizer {
                     requiredLadders.Clear();
                     break;
                 }
-
-                if (alreadyAddedPortals.Contains(portal2.SceneDestinationTag)) {
-                    // we've looped back around
-                    break;
-                }
                 
                 if (portal2.Name == "Old House Door Entrance") {
                     requiredLadders.Add("Old House Door");
@@ -964,6 +967,11 @@ namespace TunicRandomizer {
                     }
                 }
 
+                if (alreadyAddedPortals.Contains(portal2.SceneDestinationTag)) {
+                    // we've looped back around
+                    break;
+                }
+
                 if (!addedProblem) {
                     // if a problem spot is not added, that means there's somewhere you can go, so there's no loop
                     requiredLadders.Clear();
@@ -972,7 +980,6 @@ namespace TunicRandomizer {
 
                 alreadyAddedPortals.Add(portal2.SceneDestinationTag);
             }
-            
             return requiredLadders;
         }
 
@@ -996,6 +1003,8 @@ namespace TunicRandomizer {
                     OldHouseDoorUnstuck = false;
                 }
                 if (WellUnstuck == true) {
+                    PlayerCharacter.instance.currentLadder = null;
+                    PlayerCharacter.instance.GetComponent<Animator>().SetBool("climbing", false);
                     PlayerCharacter.instance.transform.position = new Vector3(-32, 40, -1);
                     PlayerCharacter.instance.transform.rotation = new Quaternion(0, 180, 0, 0);
                     WellUnstuck = false;
@@ -1080,8 +1089,10 @@ namespace TunicRandomizer {
 
                                 if ((portal2.SceneDestinationTag == "Overworld Redux, Overworld Interiors_house" && !GetBool("SV_Overworld_House Door Opened"))
                                     || (portal2.SceneDestinationTag == "Overworld Redux, Sewer_entrance" && !GetBool("inventory quantity Ladders in Well"))) {
-                                    // if it connects to the old house door and it's closed, we need to do the unstuck
-                                    if (portal1.SceneDestinationTag == "Overworld Redux, Overworld Interiors_house" && !GetBool("SV_Overworld_House Door Opened")) {
+                                    // if old house door connects to the old house door and it's closed, we need to do the unstuck
+                                    if (portal1.SceneDestinationTag == "Overworld Redux, Overworld Interiors_house"
+                                        && portal1.SceneDestinationTag == portal2.SceneDestinationTag
+                                        && !GetBool("SV_Overworld_House Door Opened")) {
                                         SetUnstuck(portal2.SceneDestinationTag);
                                     }
                                     if (GetBool(LadderRandoEnabled)) {
@@ -1095,6 +1106,9 @@ namespace TunicRandomizer {
                                                     unstuckNeeded = false;
                                                 }
                                             }
+                                        }
+                                        if (laddersNeeded.Count == 0) {
+                                            unstuckNeeded = false;
                                         }
 
                                         if (unstuckNeeded) {
