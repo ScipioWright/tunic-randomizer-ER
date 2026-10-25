@@ -255,12 +255,12 @@ namespace TunicRandomizer {
             }
 
             // for testing, this is the best place to set plando connections
-            plando = new Dictionary<string, string> {
-                {"Old House Door Entrance", "Well Ladder Entrance"},
-                {"Well Ladder Entrance", "Library Rotunda Lower Exit"},
-                {"Library Rotunda Lower Exit", "Library Rotunda Upper Exit"},
-                {"Library Rotunda Upper Exit", "Old House Door Entrance"},
-            };
+            //plando = new Dictionary<string, string> {
+            //    {"Old House Door Entrance", "Well Ladder Entrance"},
+            //    {"Well Ladder Entrance", "Library Rotunda Lower Exit"},
+            //    {"Library Rotunda Lower Exit", "Library Rotunda Upper Exit"},
+            //    {"Library Rotunda Upper Exit", "Old House Door Entrance"},
+            //};
 
             List<PortalCombo> randomizedPortals = RandomizePortals(seed, plando);
 
