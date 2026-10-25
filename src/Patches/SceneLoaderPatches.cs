@@ -648,6 +648,22 @@ namespace TunicRandomizer {
                 ERScripts.SetupVanillaPortalsAndTraversalReqs();    
                 ERData.RandomizedPortals = ERData.GetVanillaPortals();
                 ERScripts.ModifyPortalNames(loadingScene.name);
+
+                // this is to unstuck you if you ladder storage to the well ladder entrance without the ladder, the ER version is in ModifyPortals
+                TunicLogger.LogInfo($"Scene Name = {SceneName}");
+                TunicLogger.LogInfo($"portalIDToSpawnAt = {PlayerCharacterSpawn.portalIDToSpawnAt}");
+                if (SceneName == "Overworld Redux" && PlayerCharacterSpawn.portalIDToSpawnAt == "Sewer_entrance") {
+                    TunicLogger.LogInfo("step one succeeded");
+                    if (GetBool(LadderRandoEnabled) && !GetBool("inventory quantity Ladders in Well")) {
+                        TunicLogger.LogInfo("step 2 succeeded");
+                        PlayerCharacterSpawn.OnArrivalCallback += (Action)(() => {
+                            PlayerCharacter.instance.currentLadder = null;
+                            PlayerCharacter.instance.GetComponent<Animator>().SetBool("climbing", false);
+                            PlayerCharacter.instance.transform.position = new Vector3(-32, 40, -1);
+                            PlayerCharacter.instance.transform.rotation = new Quaternion(0, 180, 0, 0);
+                        });
+                    }
+                }
             }
             ERScripts.MarkPortals();
             TunicRandomizer.Tracker.PopulateDiscoveredEntrances();
